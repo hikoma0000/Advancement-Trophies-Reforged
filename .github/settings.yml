@@ -100,7 +100,3 @@ labels:
   - name: "area/performance"
     color: "#c2e0c6"
     description: "Related to performance."
-
-  - name: "test_label"
-    color: "#FF00FF"
-    description: "test"
