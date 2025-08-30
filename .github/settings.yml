@@ -48,6 +48,7 @@ labels:
     color: "#0075ca"
     description: "Related to creating or updating documentation."
 
+
   # --- Priority ---
   - name: "priority/high"
     color: "#b22222"
@@ -60,6 +61,7 @@ labels:
   - name: "priority/low"
     color: "#87cefa"
     description: "A low priority issue that can be addressed when time permits."
+
 
   # --- Status ---
   - name: "status/confirmed"
@@ -82,6 +84,23 @@ labels:
     color: "#ffffff"
     description: "This will not be fixed."
 
+  - name: "status/invalid"
+    color: "e6e6e6"
+    description: "This doesn't seem right"
+
+
+  # --- Cause ---
+  - name: "cause: Identified"
+    color: "508A16"
+    description: "The root cause of the issue has been identified."
+  - name: "cause: Inferred"
+    color: "c0c004"
+    description: "The root cause is suspected but not yet confirmed."
+  - name: "cause: Unknown"
+    color: "700205"
+    description: "The root cause of the issue has not yet been determined."
+
+
   # --- For Contributors ---
   - name: "good first issue"
     color: "#7057ff"
@@ -90,7 +109,8 @@ labels:
     color: "#008672"
     description: "Help from the community is wanted."
 
-  # --- Area (Customize for your project) ---
+
+  # --- Area ---
   - name: "area/ui"
     color: "#c2e0c6"
     description: "Related to the user interface or user experience."
