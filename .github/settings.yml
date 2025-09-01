@@ -90,13 +90,13 @@ labels:
 
 
   # --- Cause ---
-  - name: "cause: Identified"
+  - name: "cause/identified"
     color: "508A16"
     description: "The root cause of the issue has been identified."
-  - name: "cause: Inferred"
+  - name: "cause/inferred"
     color: "c0c004"
     description: "The root cause is suspected but not yet confirmed."
-  - name: "cause: Unknown"
+  - name: "cause/unknown"
     color: "700205"
     description: "The root cause of the issue has not yet been determined."
 
