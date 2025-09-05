@@ -1,7 +1,6 @@
 package io.github.hikoma0000.advancementtrophies.block.entity;
 
 import io.github.hikoma0000.advancementtrophies.init.ModBlockEntities;
-import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;

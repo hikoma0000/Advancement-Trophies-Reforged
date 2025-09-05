@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
 import io.github.hikoma0000.advancementtrophies.item.TrophyCrateItem;
 import io.github.hikoma0000.advancementtrophies.item.TrophyItem;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -13,7 +12,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =

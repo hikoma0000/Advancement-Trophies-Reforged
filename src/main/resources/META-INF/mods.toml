@@ -10,10 +10,10 @@ displayName="${mod_name}"
 authors="${mod_authors}"
 description="${mod_description}"
 logoFile="logo.png"
-issueTrackerURL="https://github.com/hikoma0000/AdvancementTrophiesReforged/issues"
+issueTrackerURL="https://github.com/hikoma0000/Advancement-Trophies-Reforged/issues"
 credits=""
 updatdeJSONURL=""
-displayURL="https://github.com/hikoma0000/AdvancementTrophiesReforged/tree/forge/1.20.1"
+displayURL="https://github.com/hikoma0000/Advancement-Trophies-Reforged/tree/forge/1.20.1"
 
 
 [[dependencies."${mod_id}"]]
