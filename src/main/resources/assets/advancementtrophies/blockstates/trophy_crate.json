@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "open=false": { "model": "advancementtrophies:block/trophy_crate" },
+    "open=true": { "model": "advancementtrophies:block/trophy_crate_open" }
+  }
+}

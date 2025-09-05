@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "advancementtrophies:block/diamond_trophy" },
+    "facing=east":  { "model": "advancementtrophies:block/diamond_trophy", "y": 90 },
+    "facing=south": { "model": "advancementtrophies:block/diamond_trophy", "y": 180 },
+    "facing=west":  { "model": "advancementtrophies:block/diamond_trophy", "y": 270 }
+  }
+}

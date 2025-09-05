@@ -1,0 +1,35 @@
+{
+  "item.advancementtrophies.trophy": "Trophy",
+  "item.advancementtrophies.trophy.named": "Trophy of %s",
+  "creativetabs.advancementtrophies_tab": "Advancement Trophies",
+
+  "tooltip.advancementtrophies.empty": "§7Unclaimed Trophy",
+  "tooltip.advancementtrophies.rarity": "Rarity: %s",
+  "tooltip.advancementtrophies.advancement": "Advancement: %s",
+  "tooltip.advancementtrophies.mod": "Mod: %s",
+  "tooltip.advancementtrophies.achiever": "Achiever: %s",
+  "tooltip.advancementtrophies.date.format": "Date: %s",
+  "tooltip.advancementtrophies.hold_for_details": "§7Hold [§f%s§7] for details",
+
+  "rarity.advancementtrophies.iron": "Iron",
+  "rarity.advancementtrophies.gold": "Gold",
+  "rarity.advancementtrophies.diamond": "Diamond",
+  "rarity.advancementtrophies.netherite": "Netherite",
+
+  "block.advancementtrophies.iron_trophy": "Iron Trophy",
+  "block.advancementtrophies.gold_trophy": "Gold Trophy",
+  "block.advancementtrophies.diamond_trophy": "Diamond Trophy",
+  "block.advancementtrophies.netherite_trophy": "Netherite Trophy",
+  "block.advancementtrophies.trophy_crate": "Trophy Crate",
+
+  "config.advancementtrophies.showAchieverLabel": "Show Achiever Label",
+  "config.advancementtrophies.dateFormat": "Date Format",
+
+  "key.categories.advancementtrophies": "Advancement Trophies",
+  "key.advancementtrophies.show_details": "Show Trophy Details",
+
+  "message.advancementtrophies.inventory_full": "Your inventory is full! The trophy has been dropped nearby.",
+
+  "tooltip.advancementtrophies.trophy_crate.description": "Stores trophies and automatically collects them.",
+  "tooltip.advancementtrophies.trophy_crate.contents": "Contents:"
+}

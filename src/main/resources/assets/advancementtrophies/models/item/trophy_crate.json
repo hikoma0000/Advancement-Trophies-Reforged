@@ -1,0 +1,11 @@
+{
+  "parent": "advancementtrophies:block/trophy_crate",
+  "overrides": [
+    {
+      "predicate": {
+        "advancementtrophies:open": 1
+      },
+      "model": "advancementtrophies:block/trophy_crate_open"
+    }
+  ]
+}
