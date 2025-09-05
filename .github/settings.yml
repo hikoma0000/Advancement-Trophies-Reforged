@@ -32,6 +32,10 @@ labels:
     color: "#d73a4a"
     description: "Something isn't working as expected."
 
+  - name: "type/compat"
+    color: "d4c5f9"
+    description: "Related to compatibility with other systems, versions, or environments."
+
   - name: "type/suggestion"
     color: "#f6ea4d"
     description: "An idea or request for a new feature."
@@ -120,3 +124,17 @@ labels:
   - name: "area/performance"
     color: "#c2e0c6"
     description: "Related to performance."
+
+
+  # --- other ---
+  - name: "fixed in next release"
+    color: "fbca04"
+    description: ""
+
+  - name: "TODO"
+    color: "591ef7"
+    description: ""
+
+  - name: "other mod"
+    color: "051737"
+    description: ""
