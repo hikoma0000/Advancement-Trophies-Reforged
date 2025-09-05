@@ -1,0 +1,6 @@
+{
+  "parent": "advancementtrophies:block/trophy_crate",
+  "textures": {
+    "top": "advancementtrophies:block/trophy_crate_top_open"
+  }
+}
