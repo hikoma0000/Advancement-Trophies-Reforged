@@ -1,9 +1,11 @@
 package io.github.hikoma0000.advancementtrophies.item;
 
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyBlockEntity;
+import io.github.hikoma0000.advancementtrophies.client.util.TooltipUtils;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
+import io.github.hikoma0000.advancementtrophies.util.TrophyUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -40,21 +42,6 @@ public class TrophyItem extends BlockItem {
         return super.updateCustomBlockEntityTag(pPos, pLevel, pPlayer, pStack, pState);
     }
 
-    @Nullable
-    private Component getAdvancementTitleFromNBT(CompoundTag nbt) {
-        if (nbt.contains(NBTKeys.ADVANCEMENT_TITLE, Tag.TAG_STRING)) {
-            return Component.translatableWithFallback(nbt.getString(NBTKeys.ADVANCEMENT_TITLE), nbt.getString(NBTKeys.ADVANCEMENT_TITLE));
-        }
-        if (nbt.contains(NBTKeys.ADVANCEMENT_TITLE_JSON, Tag.TAG_STRING)) {
-            try {
-                return Component.Serializer.fromJson(nbt.getString(NBTKeys.ADVANCEMENT_TITLE_JSON));
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
@@ -83,7 +70,8 @@ public class TrophyItem extends BlockItem {
                     pTooltipComponents.add(Component.literal("Date: Invalid Format").withStyle(ChatFormatting.RED));
                 }
             }
-            Component advancementTitle = getAdvancementTitleFromNBT(nbt);
+            // 共通化されたメソッドを呼び出すように変更
+            Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt);
             if (advancementTitle != null) {
                 pTooltipComponents.add(Component.literal(""));
                 pTooltipComponents.add(Component.translatableWithFallback("tooltip.advancementtrophies.advancement", "Advancement: %s",
@@ -94,8 +82,7 @@ public class TrophyItem extends BlockItem {
                         .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
             }
         } else {
-            Component keyName = KeyBindings.SHOW_DETAILS_KEY.getTranslatedKeyMessage();
-            pTooltipComponents.add(Component.translatableWithFallback("tooltip.advancementtrophies.hold_for_details", "§7Hold [§f%s§7] for details", keyName));
+            TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
         }
     }
 
@@ -103,7 +90,8 @@ public class TrophyItem extends BlockItem {
     public Component getName(ItemStack pStack) {
         CompoundTag nbt = pStack.getTag();
         if (nbt != null) {
-            Component advancementTitle = getAdvancementTitleFromNBT(nbt);
+            // 共通化されたメソッドを呼び出すように変更
+            Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt);
             if (advancementTitle != null) {
                 return Component.translatableWithFallback("item.advancementtrophies.trophy.named", "Trophy of %s", advancementTitle);
             }

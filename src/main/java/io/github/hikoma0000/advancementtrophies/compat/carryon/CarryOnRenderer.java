@@ -3,10 +3,10 @@ package io.github.hikoma0000.advancementtrophies.compat.carryon;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
+import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -16,8 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
-import org.joml.Matrix4f;
 import tschipp.carryon.client.render.CarryRenderHelper;
 import tschipp.carryon.common.carry.CarryOnData;
 import tschipp.carryon.common.carry.CarryOnDataManager;
@@ -31,6 +31,8 @@ public class CarryOnRenderer {
 
     private static final float[] LABEL_TRANSLATE = {0.0f, -0.4f, 0.2f};
     private static final float[] LABEL_SCALE = {0.01f, -0.01f, 0.01f};
+    private static final float MAX_LABEL_WIDTH = 35.0f;
+
 
     public static void renderInWorld(PoseStack eventPoseStack, float partialTick) {
         if (MINECRAFT.level == null || MINECRAFT.player == null || MINECRAFT.cameraEntity == null) {
@@ -81,14 +83,21 @@ public class CarryOnRenderer {
                         matrix.mulPose(Axis.YP.rotationDegrees(180.0F));
                     }
                 } else {
-                    matrix.mulPose(Axis.YP.rotationDegrees(180.0F - MINECRAFT.gameRenderer.getMainCamera().getYRot() - CarryRenderHelper.getExactBodyRotationDegrees(player, partialTick)));
+                    Vec3 playerPos = player.getPosition(partialTick);
+                    float angle = RenderUtils.getCameraPositionYRotationBillboard(playerPos, partialTick);
+                    float playerBodyYaw = CarryRenderHelper.getExactBodyRotationDegrees(player, partialTick);
+                    matrix.mulPose(Axis.YP.rotationDegrees(-angle - playerBodyYaw));
                 }
                 renderIcon(matrix, bufferSource, packedLight, trophyData);
                 matrix.popPose();
             }
 
             if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && trophyData.contains(NBTKeys.ACHIEVER)) {
-                renderLabel(matrix, bufferSource, packedLight, trophyData);
+                // renderLabelメソッドの呼び出しを変更
+                matrix.pushPose();
+                matrix.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
+                RenderUtils.renderLabel(matrix, bufferSource, packedLight, Component.literal(trophyData.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
+                matrix.popPose();
             }
 
             matrix.popPose();
@@ -112,34 +121,6 @@ public class CarryOnRenderer {
         poseStack.scale(ICON_SCALE[0], ICON_SCALE[1], ICON_SCALE[2]);
 
         itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, MINECRAFT.level, 0);
-
-        poseStack.popPose();
-    }
-
-    private static void renderLabel(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, CompoundTag nbt) {
-        if (!nbt.contains(NBTKeys.ACHIEVER)) {
-            return;
-        }
-
-        Component labelText = Component.literal(nbt.getString(NBTKeys.ACHIEVER));
-        Font font = MINECRAFT.font;
-
-        poseStack.pushPose();
-        poseStack.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
-
-        float maxTextWidth = 35.0f;
-        float textWidth = font.width(labelText);
-        float scaleMultiplier = 1.0f;
-        if (textWidth > maxTextWidth) {
-            scaleMultiplier = maxTextWidth / textWidth;
-        }
-        poseStack.scale(LABEL_SCALE[0] * scaleMultiplier, LABEL_SCALE[1], LABEL_SCALE[2]);
-
-
-        Matrix4f matrix4f = poseStack.last().pose();
-        float x = (float) (-font.width(labelText) / 2);
-
-        font.drawInBatch(labelText, x, 0, 0xFFFFFF, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, packedLight);
 
         poseStack.popPose();
     }
