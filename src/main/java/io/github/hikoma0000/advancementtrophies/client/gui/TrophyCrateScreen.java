@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
+@SuppressWarnings("removal")
 public class TrophyCrateScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(AdvancementTrophies.MOD_ID, "textures/gui/container/trophy_crate.png");

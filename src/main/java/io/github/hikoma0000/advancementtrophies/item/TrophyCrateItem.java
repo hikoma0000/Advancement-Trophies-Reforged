@@ -1,5 +1,6 @@
 package io.github.hikoma0000.advancementtrophies.item;
 
+import io.github.hikoma0000.advancementtrophies.client.util.TooltipUtils;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
@@ -95,8 +96,7 @@ public class TrophyCrateItem extends BlockItem {
                 }
             }
         } else {
-            Component keyName = KeyBindings.SHOW_DETAILS_KEY.getTranslatedKeyMessage();
-            pTooltipComponents.add(Component.translatableWithFallback("tooltip.advancementtrophies.hold_for_details", "§7Hold [§f%s§7] for details", keyName));
+            TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
         }
     }
 

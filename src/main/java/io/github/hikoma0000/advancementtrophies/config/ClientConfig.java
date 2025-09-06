@@ -10,7 +10,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> DATE_FORMAT;
 
     static {
-        BUILDER.push("Advancement Trophies Client Settings");
+        BUILDER.push("Client Settings");
 
         BUILDER.comment("Settings related to the appearance of the trophy block in the world.").push("Trophy Label");
 
