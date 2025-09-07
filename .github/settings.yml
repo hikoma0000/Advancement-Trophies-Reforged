@@ -1,38 +1,11 @@
 # These settings are synced to GitHub by https://probot.github.io/apps/settings/
 
-repository:
-  name: Advancement-Trophies-Reforged
-
-  description:
-
-  homepage:
-
-  private: true
-
-  has_issues: true
-
-  has_projects: true
-
-  has_wiki: true
-
-  has_downloads: true
-
-  allow_squash_merge: true
-  allow_merge_commit: true
-  allow_rebase_merge: true
-
-  delete_branch_on_merge: true
-
-  enable_automated_security_fixes: true
-
-  enable_vulnerability_alerts: true
-
 labels:
   - name: "type/bug"
     color: "#d73a4a"
     description: "Something isn't working as expected."
 
-  - name: "type/compat"
+  - name: "type/compatibility"
     color: "d4c5f9"
     description: "Related to compatibility with other systems, versions, or environments."
 
@@ -70,7 +43,11 @@ labels:
   # --- Status ---
   - name: "status/confirmed"
     color: "#228b22"
-    description: "The reported issue has been confirmed and needs a fix."
+    description: "The reported issue has been confirmed."
+
+  - name: "status/not-yet-confirmed"
+    color: "#d4c5f9"
+    description: "The reported issue has not yet been confirmed."
 
   - name: "status/in-progress"
     color: "#f8c300"
@@ -118,6 +95,9 @@ labels:
   - name: "area/ui"
     color: "#c2e0c6"
     description: "Related to the user interface or user experience."
+  - name: "area/rendering"
+    color: "#c2e0c6"
+    description: "Related to rendering."
   - name: "area/api"
     color: "#c2e0c6"
     description: "Related to the API."
