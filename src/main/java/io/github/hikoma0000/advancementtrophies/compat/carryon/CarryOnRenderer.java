@@ -93,7 +93,6 @@ public class CarryOnRenderer {
             }
 
             if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && trophyData.contains(NBTKeys.ACHIEVER)) {
-                // renderLabelメソッドの呼び出しを変更
                 matrix.pushPose();
                 matrix.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
                 RenderUtils.renderLabel(matrix, bufferSource, packedLight, Component.literal(trophyData.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);

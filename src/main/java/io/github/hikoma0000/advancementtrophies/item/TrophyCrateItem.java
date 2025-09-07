@@ -96,7 +96,6 @@ public class TrophyCrateItem extends BlockItem {
                 }
             }
         } else {
-            // 共通化されたメソッドを呼び出すように変更
             TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
         }
     }

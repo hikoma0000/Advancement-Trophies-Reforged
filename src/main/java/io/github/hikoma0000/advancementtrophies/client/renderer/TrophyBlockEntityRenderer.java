@@ -65,7 +65,6 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
             pPoseStack.pushPose();
             float rotation = -blockState.getValue(TrophyBlock.FACING).toYRot();
             pPoseStack.mulPose(Axis.YP.rotationDegrees(rotation));
-            // renderLabelメソッドの呼び出しを変更
             pPoseStack.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
             RenderUtils.renderLabel(pPoseStack, pBufferSource, pPackedLight, Component.literal(nbt.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
             pPoseStack.popPose();

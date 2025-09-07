@@ -70,7 +70,6 @@ public class TrophyItem extends BlockItem {
                     pTooltipComponents.add(Component.literal("Date: Invalid Format").withStyle(ChatFormatting.RED));
                 }
             }
-            // 共通化されたメソッドを呼び出すように変更
             Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt);
             if (advancementTitle != null) {
                 pTooltipComponents.add(Component.literal(""));
@@ -90,7 +89,6 @@ public class TrophyItem extends BlockItem {
     public Component getName(ItemStack pStack) {
         CompoundTag nbt = pStack.getTag();
         if (nbt != null) {
-            // 共通化されたメソッドを呼び出すように変更
             Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt);
             if (advancementTitle != null) {
                 return Component.translatableWithFallback("item.advancementtrophies.trophy.named", "Trophy of %s", advancementTitle);
