@@ -1,5 +1,5 @@
-name: Bug Report
-description: Template for reporting a bug
+name: "Bug Report"
+description: "Template for reporting a bug"
 title: "[Bug]: "
 labels: [ "type/bug", "status/not-yet-confirmed" ]
 
