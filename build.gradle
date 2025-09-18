@@ -97,6 +97,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     runtimeOnly "curse.maven:configured-457570:5873783"
     implementation "curse.maven:carry-on-274259:5649344"
+    runtimeOnly "curse.maven:create-328085:6641610"
+
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

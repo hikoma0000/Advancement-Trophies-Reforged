@@ -1,0 +1,115 @@
+package io.github.hikoma0000.advancementtrophies.event;
+
+import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
+import io.github.hikoma0000.advancementtrophies.component.TrophyData;
+import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
+import io.github.hikoma0000.advancementtrophies.init.ModItems;
+import io.github.hikoma0000.advancementtrophies.item.TrophyCrateItem;
+import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+
+@EventBusSubscriber(modid = AdvancementTrophies.MOD_ID)
+public class AdvancementEventHandler {
+
+    private static final Map<AdvancementType, DeferredHolder<Item, ? extends Item>> FRAME_TYPE_TO_TROPHY = Map.of(
+            AdvancementType.TASK, ModItems.IRON_TROPHY,
+            AdvancementType.GOAL, ModItems.GOLD_TROPHY,
+            AdvancementType.CHALLENGE, ModItems.DIAMOND_TROPHY
+    );
+
+    @SubscribeEvent
+    public static void onAdvancementGranted(AdvancementEvent.AdvancementEarnEvent event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide()) {
+            return;
+        }
+
+        AdvancementHolder advancementHolder = event.getAdvancement();
+        Advancement advancement = advancementHolder.value();
+        Optional<DisplayInfo> displayOptional = advancement.display();
+        if (displayOptional.isEmpty() || !displayOptional.get().shouldAnnounceChat()) {
+            return;
+        }
+
+        DisplayInfo display = displayOptional.get();
+
+        DeferredHolder<Item, ? extends Item> trophyItem = display.isHidden()
+                ? ModItems.NETHERITE_TROPHY
+                : FRAME_TYPE_TO_TROPHY.get(display.getType());
+
+        if (trophyItem == null) {
+            return;
+        }
+
+        ItemStack trophyStack = new ItemStack(trophyItem.get());
+        HolderLookup.Provider registries = player.level().registryAccess();
+
+        CompoundTag trophyDataNBT = new CompoundTag();
+
+        trophyDataNBT.putString(NBTKeys.ACHIEVER, player.getName().getString());
+
+        CompoundTag dateTag = new CompoundTag();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        dateTag.putInt(NBTKeys.YEAR, cal.get(Calendar.YEAR));
+        dateTag.putInt(NBTKeys.MONTH, cal.get(Calendar.MONTH) + 1);
+        dateTag.putInt(NBTKeys.DAY, cal.get(Calendar.DAY_OF_MONTH));
+        dateTag.putInt(NBTKeys.HOUR, cal.get(Calendar.HOUR_OF_DAY));
+        dateTag.putInt(NBTKeys.MINUTE, cal.get(Calendar.MINUTE));
+        dateTag.putInt(NBTKeys.SECOND, cal.get(Calendar.SECOND));
+        trophyDataNBT.put(NBTKeys.DATE, dateTag);
+
+        trophyDataNBT.putString(NBTKeys.ADVANCEMENT_ID, advancementHolder.id().toString());
+
+        Component advancementTitleComponent = display.getTitle();
+        if (advancementTitleComponent.getContents() instanceof TranslatableContents contents) {
+            trophyDataNBT.putString(NBTKeys.ADVANCEMENT_TITLE, contents.getKey());
+        } else {
+            trophyDataNBT.putString(NBTKeys.ADVANCEMENT_TITLE_JSON, Component.Serializer.toJson(advancementTitleComponent, registries));
+        }
+
+        trophyDataNBT.putString(NBTKeys.ADVANCEMENT_MOD, advancementHolder.id().getNamespace());
+
+        CompoundTag iconTag = (CompoundTag) display.getIcon().save(registries);
+        trophyDataNBT.put(NBTKeys.ICON, iconTag);
+
+        trophyStack.set(ModDataComponents.TROPHY_DATA.get(), new TrophyData(trophyDataNBT));
+
+        ItemStack trophyRemainder = trophyStack.copy();
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack inventoryStack = player.getInventory().getItem(i);
+            if (inventoryStack.getItem() instanceof TrophyCrateItem) {
+                trophyRemainder = TrophyCrateItem.addItemToCrate(inventoryStack, trophyRemainder, registries);
+                if (trophyRemainder.isEmpty()) {
+                    break;
+                }
+            }
+        }
+
+        if (!trophyRemainder.isEmpty()) {
+            if (!player.getInventory().add(trophyRemainder)) {
+                player.drop(trophyRemainder, false);
+                player.sendSystemMessage(Component.translatableWithFallback("message.advancementtrophies.inventory_full", "Your inventory is full! The trophy has been dropped nearby."));
+            }
+        }
+    }
+}
