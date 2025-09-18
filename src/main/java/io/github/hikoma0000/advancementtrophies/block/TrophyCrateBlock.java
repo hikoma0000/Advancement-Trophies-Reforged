@@ -79,8 +79,8 @@ public class TrophyCrateBlock extends BaseEntityBlock {
     @Override
     public void playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof TrophyCrateBlockEntity) {
-            if (!pLevel.isClientSide && pPlayer.isCreative()) {
+        if (blockentity instanceof TrophyCrateBlockEntity trophyCrateBlockEntity) {
+            if (!pLevel.isClientSide && pPlayer.isCreative() && !trophyCrateBlockEntity.isEmpty()) {
                 ItemStack itemstack = new ItemStack(this);
                 blockentity.saveToItem(itemstack);
 
@@ -106,9 +106,7 @@ public class TrophyCrateBlock extends BaseEntityBlock {
 
     @Override
     public ItemStack getCloneItemStack(BlockGetter pLevel, BlockPos pPos, BlockState pState) {
-        ItemStack itemStack = super.getCloneItemStack(pLevel, pPos, pState);
-        pLevel.getBlockEntity(pPos, ModBlockEntities.TROPHY_CRATE.get()).ifPresent(be -> be.saveToItem(itemStack));
-        return itemStack;
+        return new ItemStack(this);
     }
 
     @Override
