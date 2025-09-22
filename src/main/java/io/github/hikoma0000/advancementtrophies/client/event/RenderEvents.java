@@ -15,7 +15,6 @@ public class RenderEvents {
     @SubscribeEvent
     public static void onRenderLevelLast(RenderLevelStageEvent event) {
         if (isCarryOnLoaded && event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            AdvancementTrophies.LOGGER.debug("RenderLevelStageEvent.Post fired");
             CarryOnRenderer.renderInWorld(event.getPoseStack(), event.getPartialTick());
         }
     }
