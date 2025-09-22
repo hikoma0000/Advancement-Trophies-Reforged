@@ -1,27 +1,29 @@
 package io.github.hikoma0000.advancementtrophies.inventory;
 
+import io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity;
 import io.github.hikoma0000.advancementtrophies.init.ModContainers;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class TrophyCrateItemContainer extends AbstractContainerMenu {
     private final ItemStack crateStack;
-    private final IItemHandler crateInventory;
+    private final Container crateInventory;
     private final int lockedSlot;
     private final InteractionHand hand;
 
@@ -36,7 +38,15 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
     public TrophyCrateItemContainer(int pContainerId, Inventory pPlayerInventory, ItemStack crateStack, InteractionHand hand) {
         super(ModContainers.TROPHY_CRATE_ITEM_CONTAINER.get(), pContainerId);
         this.crateStack = crateStack;
-        this.crateInventory = getInventory(crateStack);
+        this.crateInventory = new SimpleContainer(TrophyCrateBlockEntity.CONTAINER_SIZE);
+        CompoundTag blockEntityTag = crateStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        if (blockEntityTag != null) {
+            NonNullList<ItemStack> items = NonNullList.withSize(TrophyCrateBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(blockEntityTag, items);
+            for (int i = 0; i < items.size(); i++) {
+                this.crateInventory.setItem(i, items.get(i));
+            }
+        }
         this.hand = hand;
 
         addPlayerInventory(pPlayerInventory);
@@ -45,7 +55,7 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
 
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new SlotItemHandler(crateInventory, j + i * 9, 8 + j * 18, 18 + i * 18) {
+                this.addSlot(new Slot(crateInventory, j + i * 9, 8 + j * 18, 18 + i * 18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
                         return ModItems.isTrophy(stack);
@@ -72,23 +82,22 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
         return -1;
     }
 
-    private IItemHandler getInventory(ItemStack stack) {
-        CompoundTag nbt = stack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        ItemStackHandler handler = new ItemStackHandler(27);
-        if (nbt.contains(NBTKeys.INVENTORY)) {
-            handler.deserializeNBT(nbt.getCompound(NBTKeys.INVENTORY));
-        }
-        return handler;
-    }
-
     @Override
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
         if (crateStack.hasTag()) {
             crateStack.getTag().putBoolean("open", false);
         }
-        CompoundTag nbt = crateStack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        nbt.put(NBTKeys.INVENTORY, ((ItemStackHandler) crateInventory).serializeNBT());
+        CompoundTag blockEntityTag = crateStack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        if (blockEntityTag == null) {
+            blockEntityTag = new CompoundTag();
+        }
+        NonNullList<ItemStack> items = NonNullList.withSize(this.crateInventory.getContainerSize(), ItemStack.EMPTY);
+        for(int i = 0; i < this.crateInventory.getContainerSize(); i++) {
+            items.set(i, this.crateInventory.getItem(i));
+        }
+        ContainerHelper.saveAllItems(blockEntityTag, items);
+        crateStack.addTagElement(NBTKeys.BLOCK_ENTITY_TAG, blockEntityTag);
         if (!pPlayer.level().isClientSide()) {
             pPlayer.level().playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BARREL_CLOSE, SoundSource.PLAYERS, 0.5F, pPlayer.level().random.nextFloat() * 0.1F + 0.9F);
         }
