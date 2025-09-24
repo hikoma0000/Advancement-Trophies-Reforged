@@ -95,8 +95,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
+    implementation "tschipp.carryon:carryon-${loader_name}-${minecraft_version}:${carryon_version}"
+
     runtimeOnly "curse.maven:configured-457570:5873783"
-    implementation "curse.maven:carry-on-274259:5649344"
+    runtimeOnly "curse.maven:nbt-autocomplete-813557:5957930"
     runtimeOnly "curse.maven:create-328085:6641610"
 
 
