@@ -27,7 +27,7 @@ public class CarryOnRenderer {
     private static final Minecraft MINECRAFT = Minecraft.getInstance();
 
     private static final float[] ICON_TRANSLATE = {0.0f, 0.75f, 0.0f};
-    private static final float[] ICON_SCALE = {0.6f, 0.6f, 0.6f};
+    private static final float[] ICON_SCALE = {0.5f, 0.5f, 0.5f};
 
     private static final float[] LABEL_TRANSLATE = {0.0f, -0.4f, 0.2f};
     private static final float[] LABEL_SCALE = {0.01f, -0.01f, 0.01f};
