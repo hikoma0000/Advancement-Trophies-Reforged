@@ -74,7 +74,7 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
     }
 
     private void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, CompoundTag nbt) {
-        ItemStack iconStack = ItemStack.parseOptional(minecraft.level.registryAccess(), nbt.getCompound(NBTKeys.ICON));
+        ItemStack iconStack = ItemStack.parse(minecraft.level.registryAccess(), nbt.getCompound(NBTKeys.ICON)).orElse(ItemStack.EMPTY);
         if (iconStack.isEmpty()) {
             return;
         }

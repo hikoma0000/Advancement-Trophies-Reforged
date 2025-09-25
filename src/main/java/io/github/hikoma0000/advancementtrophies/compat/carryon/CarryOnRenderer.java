@@ -2,11 +2,11 @@ package io.github.hikoma0000.advancementtrophies.compat.carryon;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
 import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -28,7 +28,7 @@ public class CarryOnRenderer {
     private static final Minecraft MINECRAFT = Minecraft.getInstance();
 
     private static final float[] ICON_TRANSLATE = {0.0f, 0.75f, 0.0f};
-    private static final float[] ICON_SCALE = {0.6f, 0.6f, 0.6f};
+    private static final float[] ICON_SCALE = {0.5f, 0.5f, 0.5f};
 
     private static final float[] LABEL_TRANSLATE = {0.0f, -0.4f, 0.2f};
     private static final float[] LABEL_SCALE = {0.01f, -0.01f, 0.01f};
@@ -51,24 +51,12 @@ public class CarryOnRenderer {
             if (!carryData.isCarrying(CarryOnData.CarryType.BLOCK)) {
                 continue;
             }
-
             BlockState carriedBlockState = carryData.getBlock();
             if (!(carriedBlockState.getBlock() instanceof TrophyBlock)) {
                 continue;
             }
 
-            CompoundTag tileTag = carryData.getNbt().getCompound("tile");
-            if (tileTag.isEmpty()) {
-                continue;
-            }
-
-            CompoundTag trophyData;
-            if (tileTag.contains("components")) {
-                trophyData = tileTag.getCompound("components").getCompound("advancementtrophies:trophy_data");
-            } else {
-                trophyData = tileTag;
-            }
-
+            CompoundTag trophyData = carryData.getNbt().getCompound("tile").getCompound("TrophyData");
             if (trophyData.isEmpty()) {
                 continue;
             }
@@ -81,7 +69,7 @@ public class CarryOnRenderer {
 
             int packedLight = MINECRAFT.getEntityRenderDispatcher().getPackedLightCoords(player, partialTick);
 
-            boolean isViewFromBack = player != MINECRAFT.player || !MINECRAFT.options.getCameraType().isFirstPerson();
+            boolean isViewFromBack = player != MINECRAFT.player || MINECRAFT.options.getCameraType().isMirrored();
 
             matrix.pushPose();
 
@@ -98,7 +86,7 @@ public class CarryOnRenderer {
                 } else {
                     Vec3 playerPos = player.getPosition(partialTick);
                     float angle = RenderUtils.getCameraPositionYRotationBillboard(playerPos, partialTick);
-                    float playerBodyYaw = player.yBodyRot;
+                    float playerBodyYaw = CarryRenderHelper.getExactBodyRotationDegrees(player, partialTick);
                     matrix.mulPose(Axis.YP.rotationDegrees(-angle - playerBodyYaw));
                 }
                 renderIcon(matrix, bufferSource, packedLight, trophyData);
@@ -113,15 +101,12 @@ public class CarryOnRenderer {
             }
 
             matrix.popPose();
-
-            matrix.popPose();
-            matrix.popPose();
         }
         bufferSource.endBatch();
     }
 
     private static void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, CompoundTag nbt) {
-        ItemStack iconStack = ItemStack.parseOptional(MINECRAFT.level.registryAccess(), nbt.getCompound(NBTKeys.ICON));
+        ItemStack iconStack = ItemStack.parse(MINECRAFT.level.registryAccess(), nbt.getCompound(NBTKeys.ICON)).orElse(ItemStack.EMPTY);
         if (iconStack.isEmpty()) {
             return;
         }

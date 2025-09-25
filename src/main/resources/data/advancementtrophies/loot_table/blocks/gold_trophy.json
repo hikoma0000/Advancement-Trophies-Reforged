@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "advancementtrophies:gold_trophy",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "components": [
+                "advancementtrophies:trophy_data"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

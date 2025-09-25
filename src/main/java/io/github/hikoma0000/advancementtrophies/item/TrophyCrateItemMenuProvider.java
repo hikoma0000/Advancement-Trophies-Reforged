@@ -21,7 +21,7 @@ public class TrophyCrateItemMenuProvider implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("block.advancementtrophies.trophy_crate");
+        return this.crateStack.getHoverName();
     }
 
     @Nullable

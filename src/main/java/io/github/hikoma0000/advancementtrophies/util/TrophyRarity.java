@@ -1,5 +1,8 @@
 package io.github.hikoma0000.advancementtrophies.util;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Style;
+
 public enum TrophyRarity {
     IRON("iron", net.minecraft.world.item.Rarity.COMMON),
     GOLD("gold", net.minecraft.world.item.Rarity.UNCOMMON),
@@ -20,5 +23,9 @@ public enum TrophyRarity {
 
     public net.minecraft.world.item.Rarity getItemRarity() {
         return itemRarity;
+    }
+
+    public Style getStyleModifier() {
+        return Style.EMPTY.withColor(this.itemRarity.getStyleModifier().apply(Style.EMPTY).getColor());
     }
 }

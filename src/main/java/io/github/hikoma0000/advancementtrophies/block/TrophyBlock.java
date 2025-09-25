@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyBlockEntity;
-import io.github.hikoma0000.advancementtrophies.component.TrophyData;
 import io.github.hikoma0000.advancementtrophies.init.ModBlockEntities;
 import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -39,15 +39,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<TrophyBlock> CODEC = simpleCodec(TrophyBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    private static final Map<Direction, VoxelShape> SHAPES;
+    public static final MapCodec<TrophyBlock> CODEC = simpleCodec(TrophyBlock::new);
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
+    private static final Map<Direction, VoxelShape> SHAPES;
 
     static {
         VoxelShape baseShape = Stream.of(
@@ -82,33 +78,23 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-        if (pLevel.getBlockEntity(pPos) instanceof TrophyBlockEntity be) {
-            TrophyData trophyData = pStack.get(ModDataComponents.TROPHY_DATA.get());
-            if (trophyData != null) {
-                be.setTrophyData(trophyData.data());
-            }
-        }
-    }
-
-    @Override
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
-        super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
-        if (!pLevel.isClientSide) {
-            pLevel.sendBlockUpdated(pPos, pState, pState, 3);
-        }
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override
     public BlockState playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
         if (!pLevel.isClientSide && pPlayer.isCreative()) {
-            if (pLevel.getBlockEntity(pPos) instanceof TrophyBlockEntity be) {
-                ItemStack itemStack = new ItemStack(this);
-                if (!be.getTrophyData().isEmpty()) {
-                    itemStack.set(ModDataComponents.TROPHY_DATA.get(), new TrophyData(be.getTrophyData().copy()));
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            if (blockentity instanceof TrophyBlockEntity) {
+                ItemStack itemstack = new ItemStack(this);
+                itemstack.applyComponents(blockentity.collectComponents());
+
+                if (itemstack.has(ModDataComponents.TROPHY_DATA.get())) {
+                    ItemEntity itementity = new ItemEntity(pLevel, (double)pPos.getX() + 0.5D, (double)pPos.getY() + 0.5D, (double)pPos.getZ() + 0.5D, itemstack);
+                    itementity.setDefaultPickUpDelay();
+                    pLevel.addFreshEntity(itementity);
                 }
-                popResource(pLevel, pPos, itemStack);
             }
         }
         return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
@@ -117,10 +103,9 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     @Override
     public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState) {
         ItemStack itemStack = super.getCloneItemStack(pLevel, pPos, pState);
-        if (pLevel.getBlockEntity(pPos) instanceof TrophyBlockEntity be) {
-            if (!be.getTrophyData().isEmpty()) {
-                itemStack.set(ModDataComponents.TROPHY_DATA.get(), new TrophyData(be.getTrophyData().copy()));
-            }
+        BlockEntity be = pLevel.getBlockEntity(pPos);
+        if (be != null) {
+            itemStack.applyComponents(be.collectComponents());
         }
         return itemStack;
     }
@@ -134,9 +119,7 @@ public class TrophyBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
         VoxelShape[] buffer = { shape, Shapes.empty() };
         int times = (to.get2DDataValue() & 3);
         for (int i = 0; i < times; i++) {
-            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) ->
-                    buffer[1] = Shapes.or(buffer[1], Shapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX))
-            );
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.create(1-maxZ, minY, minX, 1-minZ, maxY, maxX)));
             buffer[0] = buffer[1];
             buffer[1] = Shapes.empty();
         }

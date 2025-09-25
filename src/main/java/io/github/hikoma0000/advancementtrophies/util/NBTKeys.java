@@ -22,6 +22,6 @@ public final class NBTKeys {
     public static final String SECOND = "second";
 
     // Crate Data
-    public static final String ITEMS = "Items";
     public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";
+    public static final String LOCK = "Lock";
 }

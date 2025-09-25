@@ -17,6 +17,9 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven {
+        url "https://maven.blamejared.com/"
+    }
 }
 
 base {

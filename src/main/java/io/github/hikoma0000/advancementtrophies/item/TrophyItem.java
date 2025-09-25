@@ -1,13 +1,13 @@
 package io.github.hikoma0000.advancementtrophies.item;
 
 import io.github.hikoma0000.advancementtrophies.client.util.TooltipUtils;
-import io.github.hikoma0000.advancementtrophies.component.TrophyData;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import io.github.hikoma0000.advancementtrophies.util.TrophyUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -28,12 +28,12 @@ public class TrophyItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
-        TrophyData trophyData = pStack.get(ModDataComponents.TROPHY_DATA.get());
-        if (trophyData == null) {
+        CompoundTag nbt = pStack.get(ModDataComponents.TROPHY_DATA.get());
+
+        if (nbt == null || nbt.isEmpty()) {
             pTooltipComponents.add(Component.translatableWithFallback("tooltip.advancementtrophies.empty", "Unclaimed Trophy").withStyle(ChatFormatting.GRAY));
             return;
         }
-        CompoundTag nbt = trophyData.data();
 
         if (KeyBindings.isDetailsKeyDown) {
             if (nbt.contains(NBTKeys.ACHIEVER, Tag.TAG_STRING)) {
@@ -54,7 +54,8 @@ public class TrophyItem extends BlockItem {
                     pTooltipComponents.add(Component.literal("Date: Invalid Format").withStyle(ChatFormatting.RED));
                 }
             }
-            Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt, pContext.registries());
+            HolderLookup.Provider provider = pContext != null ? pContext.registries() : null;
+            Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt, provider);
             if (advancementTitle != null) {
                 pTooltipComponents.add(Component.literal(""));
                 pTooltipComponents.add(Component.translatableWithFallback("tooltip.advancementtrophies.advancement", "Advancement: %s",
@@ -71,9 +72,8 @@ public class TrophyItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack pStack) {
-        TrophyData trophyData = pStack.get(ModDataComponents.TROPHY_DATA.get());
-        if (trophyData != null) {
-            CompoundTag nbt = trophyData.data();
+        CompoundTag nbt = pStack.get(ModDataComponents.TROPHY_DATA.get());
+        if (nbt != null) {
             Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt, null);
             if (advancementTitle != null) {
                 return Component.translatableWithFallback("item.advancementtrophies.trophy.named", "Trophy of %s", advancementTitle);

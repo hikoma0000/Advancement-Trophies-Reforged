@@ -34,6 +34,6 @@ public class TrophyCrateScreen<T extends AbstractContainerMenu> extends Abstract
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 }

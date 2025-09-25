@@ -10,6 +10,7 @@
     }
   ],
   "result": {
-    "item": "advancementtrophies:trophy_crate"
+    "id": "advancementtrophies:trophy_crate",
+    "count": 1
   }
 }

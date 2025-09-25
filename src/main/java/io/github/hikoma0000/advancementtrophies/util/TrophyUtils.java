@@ -8,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class TrophyUtils {
     @Nullable
-    public static Component getAdvancementTitleFromNBT(CompoundTag nbt, @Nullable HolderLookup.Provider registries) {
+    public static Component getAdvancementTitleFromNBT(CompoundTag nbt, @Nullable HolderLookup.Provider provider) {
         if (nbt.contains(NBTKeys.ADVANCEMENT_TITLE, Tag.TAG_STRING)) {
             return Component.translatableWithFallback(nbt.getString(NBTKeys.ADVANCEMENT_TITLE), nbt.getString(NBTKeys.ADVANCEMENT_TITLE));
         }
-        if (registries != null && nbt.contains(NBTKeys.ADVANCEMENT_TITLE_JSON, Tag.TAG_STRING)) {
+        if (provider != null && nbt.contains(NBTKeys.ADVANCEMENT_TITLE_JSON, Tag.TAG_STRING)) {
             try {
-                return Component.Serializer.fromJson(nbt.getString(NBTKeys.ADVANCEMENT_TITLE_JSON), registries);
+                return Component.Serializer.fromJson(nbt.getString(NBTKeys.ADVANCEMENT_TITLE_JSON), provider);
             } catch (Exception e) {
                 return null;
             }
