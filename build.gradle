@@ -123,6 +123,7 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
 
 
+
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
     flatDir {
@@ -133,7 +134,8 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation "tschipp.carryon:carryon-${loader_name}-${minecraft_version}:${carryon_version}"
+    implementation fg.deobf("curse.maven:carry-on-274259:4882500")
+//    implementation "tschipp.carryon:carryon-${loader_name}-${minecraft_version}:${carryon_version}"
 
 
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
