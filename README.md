@@ -4,7 +4,7 @@ When you complete an advancement, you can get a trophy.
 
 ![Trophies](https://github.com/hikoma0000/Advancement-Trophies-Reforged/blob/forge/1.20.1/gallery/trophies.png?raw=true)
 
-This Mod is a unofficial successor to the original MOD ["Advancement Trophies"](https://modrinth.com/mod/mc-trophies), and the code and design have been rebuilt from scratch for other Minecraft versions.
+This Mod is an unofficial successor to the original MOD ["Advancement Trophies"](https://modrinth.com/mod/mc-trophies), and the code and design have been rebuilt from scratch for other Minecraft versions.
 
 ---
 
