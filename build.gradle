@@ -20,6 +20,10 @@ repositories {
     maven {
         url "https://maven.blamejared.com/"
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 base {
@@ -100,6 +104,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation "tschipp.carryon:carryon-${loader_name}-${minecraft_version}:${carryon_version}"
 
+    implementation "maven.modrinth:sophisticated-backpacks:CYOnGzwN"
+    implementation "maven.modrinth:sophisticated-core:qi2pvRvC"
+    
     runtimeOnly "curse.maven:configured-457570:5873783"
     runtimeOnly "curse.maven:nbt-autocomplete-813557:5957930"
     runtimeOnly "curse.maven:create-328085:6641610"
