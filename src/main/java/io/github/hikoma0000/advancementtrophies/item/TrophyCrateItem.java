@@ -1,5 +1,6 @@
 package io.github.hikoma0000.advancementtrophies.item;
 
+import io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity;
 import io.github.hikoma0000.advancementtrophies.client.util.TooltipUtils;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
@@ -25,7 +26,9 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class TrophyCrateItem extends BlockItem {
     public TrophyCrateItem(Block pBlock, Properties pProperties) {
@@ -43,7 +46,8 @@ public class TrophyCrateItem extends BlockItem {
             MenuProvider menuProvider = new TrophyCrateItemMenuProvider(itemstack, pHand);
             serverPlayer.openMenu(menuProvider, buf -> buf.writeEnum(pHand));
             pPlayer.awardStat(Stats.OPEN_BARREL);
-            pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BARREL_OPEN, SoundSource.PLAYERS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+            pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BARREL_OPEN,
+                    SoundSource.PLAYERS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
         }
         return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide());
     }
@@ -58,45 +62,52 @@ public class TrophyCrateItem extends BlockItem {
         return lock.unlocksWith(pPlayer.getMainHandItem()) || lock.unlocksWith(pPlayer.getOffhandItem());
     }
 
-
     @Override
     public void onDestroyed(ItemEntity pItemEntity) {
         ItemContainerContents contents = pItemEntity.getItem().get(DataComponents.CONTAINER);
         if (contents != null) {
             for (ItemStack stackInSlot : contents.stream().toList()) {
                 if (!stackInSlot.isEmpty()) {
-                    pItemEntity.level().addFreshEntity(new ItemEntity(pItemEntity.level(), pItemEntity.getX(), pItemEntity.getY(), pItemEntity.getZ(), stackInSlot));
+                    pItemEntity.level().addFreshEntity(new ItemEntity(pItemEntity.level(), pItemEntity.getX(),
+                            pItemEntity.getY(), pItemEntity.getZ(), stackInSlot));
                 }
             }
         }
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents,
+            TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.description").withStyle(ChatFormatting.GRAY));
+        pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.description")
+                .withStyle(ChatFormatting.GRAY));
 
         if (KeyBindings.isDetailsKeyDown) {
             ItemContainerContents contents = pStack.get(DataComponents.CONTAINER);
             if (contents != null && !contents.stream().allMatch(ItemStack::isEmpty)) {
                 pTooltipComponents.add(Component.literal(""));
-                pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.contents").withStyle(ChatFormatting.GRAY));
-                int iron = 0, gold = 0, diamond = 0, netherite = 0;
+                pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.contents")
+                        .withStyle(ChatFormatting.GRAY));
+                Map<TrophyRarity, Integer> counts = new EnumMap<>(TrophyRarity.class);
                 for (ItemStack stackInSlot : contents.stream().toList()) {
-                    if (stackInSlot.is(ModItems.IRON_TROPHY.get())) {
-                        iron++;
-                    } else if (stackInSlot.is(ModItems.GOLD_TROPHY.get())) {
-                        gold++;
-                    } else if (stackInSlot.is(ModItems.DIAMOND_TROPHY.get())) {
-                        diamond++;
-                    } else if (stackInSlot.is(ModItems.NETHERITE_TROPHY.get())) {
-                        netherite++;
+                    if (stackInSlot.isEmpty())
+                        continue;
+                    TrophyRarity rarity = ModItems.getTrophyRarity(stackInSlot.getItem());
+                    if (rarity != null) {
+                        counts.merge(rarity, stackInSlot.getCount(), Integer::sum);
                     }
                 }
-                if (iron > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.iron")).append(": " + iron).withStyle(TrophyRarity.IRON.getStyleModifier()));
-                if (gold > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.gold")).append(": " + gold).withStyle(TrophyRarity.GOLD.getStyleModifier()));
-                if (diamond > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.diamond")).append(": " + diamond).withStyle(TrophyRarity.DIAMOND.getStyleModifier()));
-                if (netherite > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.netherite")).append(": " + netherite).withStyle(TrophyRarity.NETHERITE.getStyleModifier()));
+                for (TrophyRarity rarity : TrophyRarity.values()) {
+                    int count = counts.getOrDefault(rarity, 0);
+                    if (count > 0) {
+                        pTooltipComponents.add(
+                                Component.translatableWithFallback(
+                                        "tooltip.advancementtrophies.trophy_crate.amount",
+                                        "  %s: %s",
+                                        Component.translatable("rarity.advancementtrophies." + rarity.getName()),
+                                        count).withStyle(rarity.getStyleModifier()));
+                    }
+                }
             }
         } else {
             TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
@@ -109,16 +120,18 @@ public class TrophyCrateItem extends BlockItem {
         }
 
         ItemContainerContents contents = crateStack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
-        NonNullList<ItemStack> items = NonNullList.createWithCapacity(contents.getSlots());
+        NonNullList<ItemStack> items = NonNullList.withSize(TrophyCrateBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
         contents.copyInto(items);
 
         ItemStack remainder = trophyStack.copy();
         for (int i = 0; i < items.size(); i++) {
-            if (remainder.isEmpty()) break;
+            if (remainder.isEmpty())
+                break;
             ItemStack current = items.get(i);
             if (current.isEmpty()) {
                 items.set(i, remainder.split(remainder.getMaxStackSize()));
-            } else if (ItemStack.isSameItemSameComponents(current, remainder) && current.getCount() < current.getMaxStackSize()) {
+            } else if (ItemStack.isSameItemSameComponents(current, remainder)
+                    && current.getCount() < current.getMaxStackSize()) {
                 int toAdd = Math.min(remainder.getCount(), current.getMaxStackSize() - current.getCount());
                 current.grow(toAdd);
                 remainder.shrink(toAdd);

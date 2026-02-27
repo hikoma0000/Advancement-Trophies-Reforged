@@ -6,6 +6,7 @@ import io.github.hikoma0000.advancementtrophies.client.event.ClientEvents;
 import io.github.hikoma0000.advancementtrophies.client.event.RenderEvents;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.event.AdvancementEventHandler;
+import io.github.hikoma0000.advancementtrophies.event.PlayerEventHandler;
 import io.github.hikoma0000.advancementtrophies.init.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -35,6 +36,7 @@ public class AdvancementTrophies {
         modEventBus.addListener(this::init);
 
         NeoForge.EVENT_BUS.register(new AdvancementEventHandler());
+        NeoForge.EVENT_BUS.register(new PlayerEventHandler());
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modEventBus.addListener(ClientSetup::init);
