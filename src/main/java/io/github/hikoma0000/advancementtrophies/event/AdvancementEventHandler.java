@@ -2,7 +2,6 @@ package io.github.hikoma0000.advancementtrophies.event;
 
 import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
-import io.github.hikoma0000.advancementtrophies.item.TrophyCrateItem;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -18,9 +17,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -29,8 +31,7 @@ public class AdvancementEventHandler {
     private static final Map<AdvancementType, Supplier<Item>> FRAME_TYPE_TO_TROPHY = Map.of(
             AdvancementType.TASK, ModItems.IRON_TROPHY,
             AdvancementType.GOAL, ModItems.GOLD_TROPHY,
-            AdvancementType.CHALLENGE, ModItems.DIAMOND_TROPHY
-    );
+            AdvancementType.CHALLENGE, ModItems.DIAMOND_TROPHY);
 
     @SubscribeEvent
     public void onAdvancementGranted(AdvancementEvent.AdvancementEarnEvent event) {
@@ -76,7 +77,8 @@ public class AdvancementEventHandler {
         if (advancementTitleComponent.getContents() instanceof TranslatableContents contents) {
             nbt.putString(NBTKeys.ADVANCEMENT_TITLE, contents.getKey());
         } else {
-            nbt.putString(NBTKeys.ADVANCEMENT_TITLE_JSON, Component.Serializer.toJson(advancementTitleComponent, provider));
+            nbt.putString(NBTKeys.ADVANCEMENT_TITLE_JSON,
+                    Component.Serializer.toJson(advancementTitleComponent, provider));
         }
 
         nbt.putString(NBTKeys.ADVANCEMENT_MOD, advancementHolder.id().getNamespace());
@@ -86,21 +88,16 @@ public class AdvancementEventHandler {
 
         trophyStack.set(ModDataComponents.TROPHY_DATA.get(), nbt);
 
-        ItemStack trophyRemainder = trophyStack.copy();
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack inventoryStack = player.getInventory().getItem(i);
-            if (inventoryStack.getItem() instanceof TrophyCrateItem) {
-                trophyRemainder = TrophyCrateItem.addItemToCrate(inventoryStack, trophyRemainder);
-                if (trophyRemainder.isEmpty()) {
-                    break;
-                }
-            }
-        }
+        IItemHandler playerInvHandler = new InvWrapper(player.getInventory());
+        ItemStack trophyRemainder = PlayerEventHandler.insertIntoCratesDeep(
+                playerInvHandler, trophyStack.copy(), new HashSet<>());
 
         if (!trophyRemainder.isEmpty()) {
             if (!player.getInventory().add(trophyRemainder)) {
                 player.drop(trophyRemainder, false);
-                player.sendSystemMessage(Component.translatableWithFallback("message.advancementtrophies.inventory_full", "Your inventory is full! The trophy has been dropped nearby."));
+                player.sendSystemMessage(
+                        Component.translatableWithFallback("message.advancementtrophies.inventory_full",
+                                "Your inventory is full! The trophy has been dropped nearby."));
             }
         }
     }
