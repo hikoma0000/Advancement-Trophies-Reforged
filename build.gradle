@@ -108,9 +108,11 @@ dependencies {
     implementation "maven.modrinth:sophisticated-core:qi2pvRvC"
     implementation "curse.maven:curios-309927:6529130"
     
-    runtimeOnly "curse.maven:configured-457570:5873783"
-    runtimeOnly "curse.maven:nbt-autocomplete-813557:5957930"
-    runtimeOnly "curse.maven:create-328085:6641610"
+    if (!gradle.startParameter.taskNames.contains("runData")) {
+        runtimeOnly "curse.maven:configured-457570:5873783"
+        runtimeOnly "curse.maven:nbt-autocomplete-813557:5957930"
+        runtimeOnly "curse.maven:create-328085:6641610"
+    }
 }
 
 
