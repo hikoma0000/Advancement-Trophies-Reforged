@@ -57,7 +57,6 @@ public class PlayerEventHandler {
         }
     }
 
-    @SuppressWarnings("removal")
     private static ItemStack insertIntoCratesInBackpacks(Player player, ItemStack stack, Set<IItemHandler> visited) {
         ItemStack[] remainderRef = { stack };
         PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, handlerName, identifier, slot) -> {
