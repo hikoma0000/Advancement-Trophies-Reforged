@@ -15,6 +15,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
+@SuppressWarnings("deprecation")
 public class ClientSetup {
     public static void init(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
@@ -23,9 +24,11 @@ public class ClientSetup {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.DIAMOND_TROPHY.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.NETHERITE_TROPHY.get(), RenderType.cutout());
 
-            ItemProperties.register(ModItems.TROPHY_CRATE.get(), ResourceLocation.fromNamespaceAndPath("advancementtrophies", "open"), (stack, level, entity, seed) -> {
-                return stack.getOrDefault(ModDataComponents.OPEN.get(), false) ? 1.0f : 0.0f;
-            });
+            ItemProperties.register(ModItems.TROPHY_CRATE.get(),
+                    ResourceLocation.fromNamespaceAndPath("advancementtrophies", "open"),
+                    (stack, level, entity, seed) -> {
+                        return stack.getOrDefault(ModDataComponents.OPEN.get(), false) ? 1.0f : 0.0f;
+                    });
         });
     }
 
@@ -34,7 +37,9 @@ public class ClientSetup {
     }
 
     public static void onRegisterMenuScreens(final RegisterMenuScreensEvent event) {
-        event.register(ModContainers.TROPHY_CRATE_CONTAINER.get(), (TrophyCrateContainer container, Inventory inv, Component title) -> new TrophyCrateScreen<>(container, inv, title));
-        event.register(ModContainers.TROPHY_CRATE_ITEM_CONTAINER.get(), (TrophyCrateItemContainer container, Inventory inv, Component title) -> new TrophyCrateScreen<>(container, inv, title));
+        event.register(ModContainers.TROPHY_CRATE_CONTAINER.get(), (TrophyCrateContainer container, Inventory inv,
+                Component title) -> new TrophyCrateScreen<>(container, inv, title));
+        event.register(ModContainers.TROPHY_CRATE_ITEM_CONTAINER.get(), (TrophyCrateItemContainer container,
+                Inventory inv, Component title) -> new TrophyCrateScreen<>(container, inv, title));
     }
 }

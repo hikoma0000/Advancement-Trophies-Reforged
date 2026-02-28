@@ -2,7 +2,6 @@ package io.github.hikoma0000.advancementtrophies.compat.carryon;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
 import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
@@ -23,17 +22,15 @@ import tschipp.carryon.client.render.CarryRenderHelper;
 import tschipp.carryon.common.carry.CarryOnData;
 import tschipp.carryon.common.carry.CarryOnDataManager;
 
-
 public class CarryOnRenderer {
     private static final Minecraft MINECRAFT = Minecraft.getInstance();
 
-    private static final float[] ICON_TRANSLATE = {0.0f, 0.75f, 0.0f};
-    private static final float[] ICON_SCALE = {0.5f, 0.5f, 0.5f};
+    private static final float[] ICON_TRANSLATE = { 0.0f, 0.75f, 0.0f };
+    private static final float[] ICON_SCALE = { 0.5f, 0.5f, 0.5f };
 
-    private static final float[] LABEL_TRANSLATE = {0.0f, -0.4f, 0.2f};
-    private static final float[] LABEL_SCALE = {0.01f, -0.01f, 0.01f};
+    private static final float[] LABEL_TRANSLATE = { 0.0f, -0.4f, 0.2f };
+    private static final float[] LABEL_SCALE = { 0.01f, -0.01f, 0.01f };
     private static final float MAX_LABEL_WIDTH = 35.0f;
-
 
     public static void renderInWorld(PoseStack eventPoseStack, float partialTick) {
         if (MINECRAFT.level == null || MINECRAFT.player == null || MINECRAFT.cameraEntity == null) {
@@ -43,7 +40,8 @@ public class CarryOnRenderer {
         MultiBufferSource.BufferSource bufferSource = MINECRAFT.renderBuffers().bufferSource();
 
         for (Player player : MINECRAFT.level.players()) {
-            if (MINECRAFT.options.getCameraType().isFirstPerson() && player == MINECRAFT.player && !isFirstPersonModLoaded()) {
+            if (MINECRAFT.options.getCameraType().isFirstPerson() && player == MINECRAFT.player
+                    && !isFirstPersonModLoaded()) {
                 continue;
             }
 
@@ -60,7 +58,6 @@ public class CarryOnRenderer {
             if (trophyData.isEmpty()) {
                 continue;
             }
-
 
             PoseStack matrix = new PoseStack();
             matrix.last().pose().mul(eventPoseStack.last().pose());
@@ -96,7 +93,8 @@ public class CarryOnRenderer {
             if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && trophyData.contains(NBTKeys.ACHIEVER)) {
                 matrix.pushPose();
                 matrix.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
-                RenderUtils.renderLabel(matrix, bufferSource, packedLight, Component.literal(trophyData.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
+                RenderUtils.renderLabel(matrix, bufferSource, packedLight,
+                        Component.literal(trophyData.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
                 matrix.popPose();
             }
 
@@ -105,8 +103,10 @@ public class CarryOnRenderer {
         bufferSource.endBatch();
     }
 
-    private static void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, CompoundTag nbt) {
-        ItemStack iconStack = ItemStack.parse(MINECRAFT.level.registryAccess(), nbt.getCompound(NBTKeys.ICON)).orElse(ItemStack.EMPTY);
+    private static void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+            CompoundTag nbt) {
+        ItemStack iconStack = ItemStack.parse(MINECRAFT.level.registryAccess(), nbt.getCompound(NBTKeys.ICON))
+                .orElse(ItemStack.EMPTY);
         if (iconStack.isEmpty()) {
             return;
         }
@@ -117,12 +117,14 @@ public class CarryOnRenderer {
         poseStack.translate(ICON_TRANSLATE[0], ICON_TRANSLATE[1], ICON_TRANSLATE[2]);
         poseStack.scale(ICON_SCALE[0], ICON_SCALE[1], ICON_SCALE[2]);
 
-        itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, MINECRAFT.level, 0);
+        itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY,
+                poseStack, bufferSource, MINECRAFT.level, 0);
 
         poseStack.popPose();
     }
 
     private static boolean isFirstPersonModLoaded() {
-        return ModList.get().isLoaded("firstperson") || ModList.get().isLoaded("alien_first_person") || ModList.get().isLoaded("realcamera");
+        return ModList.get().isLoaded("firstperson") || ModList.get().isLoaded("alien_first_person")
+                || ModList.get().isLoaded("realcamera");
     }
 }
