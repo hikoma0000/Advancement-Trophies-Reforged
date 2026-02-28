@@ -46,14 +46,16 @@ public class TrophyCrateItem extends BlockItem {
             MenuProvider menuProvider = new TrophyCrateItemMenuProvider(itemstack, pHand);
             NetworkHooks.openScreen((ServerPlayer) pPlayer, menuProvider, buf -> buf.writeEnum(pHand));
             pPlayer.awardStat(Stats.OPEN_BARREL);
-            pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BARREL_OPEN, SoundSource.PLAYERS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+            pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BARREL_OPEN,
+                    SoundSource.PLAYERS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
         }
         return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide());
     }
 
     private boolean isLocked(ItemStack pStack) {
         CompoundTag compoundtag = pStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        return compoundtag != null && compoundtag.contains(NBTKeys.LOCK, 8) && !compoundtag.getString(NBTKeys.LOCK).isEmpty();
+        return compoundtag != null && compoundtag.contains(NBTKeys.LOCK, 8)
+                && !compoundtag.getString(NBTKeys.LOCK).isEmpty();
     }
 
     private boolean canOpen(ItemStack pStack, Player pPlayer) {
@@ -62,9 +64,9 @@ public class TrophyCrateItem extends BlockItem {
             return true;
         }
         String s = compoundtag.getString(NBTKeys.LOCK);
-        return s.isEmpty() || pPlayer.isHolding(item -> item.hasCustomHoverName() && item.getHoverName().getString().equals(s));
+        return s.isEmpty()
+                || pPlayer.isHolding(item -> item.hasCustomHoverName() && item.getHoverName().getString().equals(s));
     }
-
 
     @Override
     public void onDestroyed(ItemEntity pItemEntity) {
@@ -74,42 +76,54 @@ public class TrophyCrateItem extends BlockItem {
             ContainerHelper.loadAllItems(blockEntityTag, items);
             for (ItemStack stackInSlot : items) {
                 if (!stackInSlot.isEmpty()) {
-                    pItemEntity.level().addFreshEntity(new ItemEntity(pItemEntity.level(), pItemEntity.getX(), pItemEntity.getY(), pItemEntity.getZ(), stackInSlot));
+                    pItemEntity.level().addFreshEntity(new ItemEntity(pItemEntity.level(), pItemEntity.getX(),
+                            pItemEntity.getY(), pItemEntity.getZ(), stackInSlot));
                 }
             }
         }
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents,
+            TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.description").withStyle(ChatFormatting.GRAY));
+        pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.description")
+                .withStyle(ChatFormatting.GRAY));
 
         if (KeyBindings.isDetailsKeyDown) {
             CompoundTag blockEntityTag = pStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (blockEntityTag != null) {
-                NonNullList<ItemStack> items = NonNullList.withSize(TrophyCrateBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
+                NonNullList<ItemStack> items = NonNullList.withSize(TrophyCrateBlockEntity.CONTAINER_SIZE,
+                        ItemStack.EMPTY);
                 ContainerHelper.loadAllItems(blockEntityTag, items);
 
                 if (items.stream().anyMatch(item -> !item.isEmpty())) {
                     pTooltipComponents.add(Component.literal(""));
-                    pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.contents").withStyle(ChatFormatting.GRAY));
-                    int iron = 0, gold = 0, diamond = 0, netherite = 0;
+                    pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.contents")
+                            .withStyle(ChatFormatting.GRAY));
+                    java.util.Map<TrophyRarity, Integer> counts = new java.util.EnumMap<>(TrophyRarity.class);
                     for (ItemStack stackInSlot : items) {
-                        if (stackInSlot.getItem() == ModItems.IRON_TROPHY.get()) {
-                            iron++;
-                        } else if (stackInSlot.getItem() == ModItems.GOLD_TROPHY.get()) {
-                            gold++;
-                        } else if (stackInSlot.getItem() == ModItems.DIAMOND_TROPHY.get()) {
-                            diamond++;
-                        } else if (stackInSlot.getItem() == ModItems.NETHERITE_TROPHY.get()) {
-                            netherite++;
+                        if (stackInSlot.isEmpty())
+                            continue;
+                        TrophyRarity rarity = ModItems.getTrophyRarity(stackInSlot.getItem());
+                        if (rarity != null) {
+                            counts.put(rarity, counts.getOrDefault(rarity, 0) + stackInSlot.getCount());
                         }
                     }
-                    if (iron > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.iron")).append(": " + iron).withStyle(TrophyRarity.IRON.getItemRarity().color));
-                    if (gold > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.gold")).append(": " + gold).withStyle(TrophyRarity.GOLD.getItemRarity().color));
-                    if (diamond > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.diamond")).append(": " + diamond).withStyle(TrophyRarity.DIAMOND.getItemRarity().color));
-                    if (netherite > 0) pTooltipComponents.add(Component.literal("  ").append(Component.translatable("rarity.advancementtrophies.netherite")).append(": " + netherite).withStyle(TrophyRarity.NETHERITE.getItemRarity().color));
+
+                    for (TrophyRarity rarity : TrophyRarity.values()) {
+                        int count = counts.getOrDefault(rarity, 0);
+                        if (count > 0) {
+                            pTooltipComponents
+                                    .add(Component
+                                            .translatableWithFallback("tooltip.advancementtrophies.trophy_crate.amount",
+                                                    "  %s: %s",
+                                                    Component.translatable(
+                                                            "rarity.advancementtrophies." + rarity.getName()),
+                                                    count)
+                                            .withStyle(rarity.getItemRarity().color));
+                        }
+                    }
                 }
             }
         } else {
@@ -128,11 +142,13 @@ public class TrophyCrateItem extends BlockItem {
 
         ItemStack remainder = trophyStack.copy();
         for (int i = 0; i < items.size(); i++) {
-            if (remainder.isEmpty()) break;
+            if (remainder.isEmpty())
+                break;
             ItemStack current = items.get(i);
             if (current.isEmpty()) {
                 items.set(i, remainder.split(remainder.getMaxStackSize()));
-            } else if (ItemStack.isSameItemSameTags(current, remainder) && current.getCount() < current.getMaxStackSize()) {
+            } else if (ItemStack.isSameItemSameTags(current, remainder)
+                    && current.getCount() < current.getMaxStackSize()) {
                 int toAdd = Math.min(remainder.getCount(), current.getMaxStackSize() - current.getCount());
                 current.grow(toAdd);
                 remainder.shrink(toAdd);

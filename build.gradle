@@ -160,7 +160,9 @@ dependencies {
     implementation fg.deobf("curse.maven:configured-457570:5180900")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
 
-//    implementation fg.deobf("curse.maven:curios-309927:6418456")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.9.1+1.20.1:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.9.1+1.20.1")
+    // implementation fg.deobf("curse.maven:curios-309927:6418456")
 //    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
 //    implementation fg.deobf("curse.maven:ferritecore-429235:4810975")
 //    implementation fg.deobf("curse.maven:mouse-tweaks-60089:5338457")

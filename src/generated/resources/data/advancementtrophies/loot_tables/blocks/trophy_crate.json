@@ -2,12 +2,15 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1.0,
       "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "advancementtrophies:trophy_crate",
           "functions": [
             {
               "function": "minecraft:copy_name",
@@ -15,38 +18,41 @@
             },
             {
               "function": "minecraft:copy_nbt",
-              "source": "block_entity",
               "ops": [
                 {
+                  "op": "replace",
                   "source": "Lock",
-                  "target": "BlockEntityTag.Lock",
-                  "op": "replace"
+                  "target": "BlockEntityTag.Lock"
                 },
                 {
+                  "op": "replace",
                   "source": "LootTable",
-                  "target": "BlockEntityTag.LootTable",
-                  "op": "replace"
+                  "target": "BlockEntityTag.LootTable"
                 },
                 {
+                  "op": "replace",
                   "source": "LootTableSeed",
-                  "target": "BlockEntityTag.LootTableSeed",
-                  "op": "replace"
+                  "target": "BlockEntityTag.LootTableSeed"
                 }
-              ]
+              ],
+              "source": "block_entity"
             },
             {
-              "function": "minecraft:set_contents",
-              "type": "advancementtrophies:trophy_crate",
+              "type": "minecraft:shulker_box",
               "entries": [
                 {
                   "type": "minecraft:dynamic",
                   "name": "minecraft:contents"
                 }
-              ]
+              ],
+              "function": "minecraft:set_contents"
             }
-          ]
+          ],
+          "name": "advancementtrophies:trophy_crate"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "advancementtrophies:blocks/trophy_crate"
 }
