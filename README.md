@@ -4,6 +4,9 @@ When you complete an advancement, you can get a trophy.
 
 ![Trophies](https://github.com/hikoma0000/Advancement-Trophies-Reforged/blob/forge/1.20.1/gallery/trophies.png?raw=true)
 
+<a href="https://minecraftforge.net/"><img alt="forge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/forge_vector.svg"></a> <a href="https://neoforged.net/"><img alt="neoforge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/neoforge_vector.svg"></a>
+<a href="https://github.com/hikoma0000/Advancement-Trophies-Reforged/issues"><img alt="issues-and-suggestions-on-github" src="https://raw.githubusercontent.com/hikoma0000/MinecraftBadges/e83b7ab154dab909ec85e99091282b02bff3bff3/github/issues_and_suggestions_on_github.svg"></a>
+
 This Mod is an unofficial successor to the original MOD ["Advancement Trophies"](https://modrinth.com/mod/mc-trophies), and the code and design have been rebuilt from scratch for other Minecraft versions.
 
 ---
@@ -37,6 +40,6 @@ You can configure client-side settings by editing the `advancementtrophies-clien
 
 ---
 
-## Feedback
+## My Mods
 
-Please provide suggestions and bug reports here: [https://github.com/hikoma0000/Advancement-Trophies-Reforged/issues](https://github.com/hikoma0000/Advancement-Trophies-Reforged/issues)
+<a href="https://www.curseforge.com/minecraft/mc-mods/realistic-nametag" rel="nofollow"><img src="https://github.com/hikoma0000/Realistic-Nametag/blob/gallery/data/logo.png?raw=true" alt="" width="150" height="150"></a> <a href="https://www.curseforge.com/minecraft/mc-mods/inspectability-reforged" rel="nofollow"><img src="https://github.com/hikoma0000/Inspectability-Reforged/blob/gallery/logo.png?raw=true" alt="" width="150" height="150"></a>
