@@ -21,7 +21,7 @@ group = mod_group_id
 version = mod_version
 
 base {
-    archivesName = mod_id
+    archivesName = "ATR-${loader_name}-${minecraft_version}"
 }
 
 java {
@@ -33,7 +33,6 @@ minecraft {
     copyIdeResources = true
 
     runs {
-
         client {
             workingDirectory project.file('run/client')
             args '--username', 'Dev'
@@ -56,6 +55,13 @@ minecraft {
                     source sourceSets.main
                 }
             }
+        }
+
+        clientJBR {
+            parent minecraft.runs.client
+            workingDirectory project.file('run/clientJBR')
+            args '--username', 'DevJBR'
+            jvmArg '-XX:+AllowEnhancedClassRedefinition'
         }
 
         server {
@@ -83,10 +89,10 @@ minecraft {
     }
 }
 
-//mixin {
-//    add sourceSets.main, "${mod_id}.refmap.json"
-//    config "${mod_id}.mixins.json"
-//}
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
@@ -140,7 +146,7 @@ dependencies {
 //    implementation "tschipp.carryon:carryon-${loader_name}-${minecraft_version}:${carryon_version}"
 
 
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // runtimeOnly fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation fg.deobf(files('libs/.jar'))
 
 //    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
@@ -155,6 +161,11 @@ dependencies {
 //    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
     implementation fg.deobf("curse.maven:sophisticated-core-618298:6951875")
 
+    implementation fg.deobf("maven.modrinth:alexs-caves:lC8HHXOF")
+    implementation fg.deobf("curse.maven:alexs-mobs-426558:5698791")
+
+    implementation fg.deobf("maven.modrinth:citadel:lTAAe4sZ")
+
 
 //    implementation fg.deobf("curse.maven:selene-499980:6507197")
 //    runtimeOnly fg.deobf("curse.maven:geckolib-388172:6622543")
@@ -168,6 +179,9 @@ dependencies {
 //    implementation fg.deobf("curse.maven:ferritecore-429235:4810975")
 //    implementation fg.deobf("curse.maven:mouse-tweaks-60089:5338457")
 
+    implementation fg.deobf("maven.modrinth:better-advancements:EKwDaD23")
+    implementation fg.deobf("maven.modrinth:advancement-plaques:xqigG9AR")
+    implementation fg.deobf("maven.modrinth:iceberg:BQ8rJPXV")
 
 
     runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
@@ -189,7 +203,7 @@ dependencies {
 
 //    runtimeOnly fg.deobf("curse.maven:immersive-aircraft-666014:6316345")
 //    runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:6237015")
-//    runtimeOnly fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6654541")
+    // implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:8141310")
 //    runtimeOnly fg.deobf("curse.maven:superb-edewarfare-1218165:6633653")
     implementation fg.deobf("curse.maven:create-328085:6641603")
 

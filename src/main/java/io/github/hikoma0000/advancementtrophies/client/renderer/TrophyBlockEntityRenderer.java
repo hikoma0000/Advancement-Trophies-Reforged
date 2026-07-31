@@ -5,6 +5,8 @@ import com.mojang.math.Axis;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyBlockEntity;
 import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
+import io.github.hikoma0000.advancementtrophies.compat.alexsmobs.AlexsMobsCompat;
+import io.github.hikoma0000.advancementtrophies.compat.citadel.CitadelCompat;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import net.minecraft.client.Minecraft;
@@ -42,6 +44,11 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
         CompoundTag nbt = pBlockEntity.getTrophyData();
 
         if (nbt == null || nbt.isEmpty()) {
+            return;
+        }
+
+        Vec3 cameraPos = this.minecraft.gameRenderer.getMainCamera().getPosition();
+        if (cameraPos.distanceToSqr(Vec3.atCenterOf(pBlockEntity.getBlockPos())) > 64.0D * 64.0D) {
             return;
         }
 
@@ -85,8 +92,16 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
         poseStack.translate(ICON_TRANSLATE[0], ICON_TRANSLATE[1], ICON_TRANSLATE[2]);
         poseStack.scale(ICON_SCALE[0], ICON_SCALE[1], ICON_SCALE[2]);
 
-        itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, minecraft.level, 0);
+        if (!CitadelCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, packedOverlay)
+                && !AlexsMobsCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, packedOverlay)) {
+            itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, minecraft.level, 0);
+        }
 
         poseStack.popPose();
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 64;
     }
 }

@@ -28,8 +28,7 @@ public class AdvancementEventHandler {
     private static final Map<FrameType, RegistryObject<Item>> FRAME_TYPE_TO_TROPHY = Map.of(
             FrameType.TASK, ModItems.IRON_TROPHY,
             FrameType.GOAL, ModItems.GOLD_TROPHY,
-            FrameType.CHALLENGE, ModItems.DIAMOND_TROPHY
-    );
+            FrameType.CHALLENGE, ModItems.DIAMOND_TROPHY);
 
     @SubscribeEvent
     public static void onAdvancementGranted(AdvancementEvent.AdvancementEarnEvent event) {
@@ -97,7 +96,9 @@ public class AdvancementEventHandler {
         if (!trophyRemainder.isEmpty()) {
             if (!player.getInventory().add(trophyRemainder)) {
                 player.drop(trophyRemainder, false);
-                player.sendSystemMessage(Component.translatableWithFallback("message.advancementtrophies.inventory_full", "Your inventory is full! The trophy has been dropped nearby."));
+                player.sendSystemMessage(
+                        Component.translatableWithFallback("message.advancementtrophies.inventory_full",
+                                "§cYour inventory is full! The trophy has been dropped nearby."));
             }
         }
     }

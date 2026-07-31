@@ -6,6 +6,9 @@ import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
 import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import io.github.hikoma0000.advancementtrophies.util.TrophyRarity;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class TrophyCrateItem extends BlockItem {
     public TrophyCrateItem(Block pBlock, Properties pProperties) {
@@ -101,7 +102,7 @@ public class TrophyCrateItem extends BlockItem {
                     pTooltipComponents.add(Component.literal(""));
                     pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.contents")
                             .withStyle(ChatFormatting.GRAY));
-                    java.util.Map<TrophyRarity, Integer> counts = new java.util.EnumMap<>(TrophyRarity.class);
+                    Map<TrophyRarity, Integer> counts = new EnumMap<>(TrophyRarity.class);
                     for (ItemStack stackInSlot : items) {
                         if (stackInSlot.isEmpty())
                             continue;
