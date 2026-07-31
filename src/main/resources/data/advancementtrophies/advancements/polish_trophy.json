@@ -1,0 +1,22 @@
+{
+  "parent": "advancementtrophies:obtain_trophy",
+  "display": {
+    "icon": {
+      "item": "minecraft:brush"
+    },
+    "title": {
+      "translate": "advancements.advancementtrophies.polish_trophy.title"
+    },
+    "description": {
+      "translate": "advancements.advancementtrophies.polish_trophy.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "polished": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

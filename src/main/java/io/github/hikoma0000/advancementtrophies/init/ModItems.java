@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableSet;
 import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
 import io.github.hikoma0000.advancementtrophies.item.TrophyCrateItem;
 import io.github.hikoma0000.advancementtrophies.item.TrophyItem;
+import io.github.hikoma0000.advancementtrophies.util.TrophyRarity;
+import java.util.Set;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.Set;
 
 public class ModItems {
         public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,
@@ -46,15 +46,15 @@ public class ModItems {
                 return TROPHY_ITEM_SET.stream().anyMatch(trophy -> trophy.get() == stack.getItem());
         }
 
-        public static io.github.hikoma0000.advancementtrophies.util.TrophyRarity getTrophyRarity(Item item) {
+        public static TrophyRarity getTrophyRarity(Item item) {
                 if (item == IRON_TROPHY.get())
-                        return io.github.hikoma0000.advancementtrophies.util.TrophyRarity.IRON;
+                        return TrophyRarity.IRON;
                 if (item == GOLD_TROPHY.get())
-                        return io.github.hikoma0000.advancementtrophies.util.TrophyRarity.GOLD;
+                        return TrophyRarity.GOLD;
                 if (item == DIAMOND_TROPHY.get())
-                        return io.github.hikoma0000.advancementtrophies.util.TrophyRarity.DIAMOND;
+                        return TrophyRarity.DIAMOND;
                 if (item == NETHERITE_TROPHY.get())
-                        return io.github.hikoma0000.advancementtrophies.util.TrophyRarity.NETHERITE;
+                        return TrophyRarity.NETHERITE;
                 return null;
         }
 }

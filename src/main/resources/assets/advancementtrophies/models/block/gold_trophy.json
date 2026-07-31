@@ -1,6 +1,7 @@
 {
 	"parent": "advancementtrophies:block/trophy",
 	"textures": {
-		"trophy": "advancementtrophies:block/gold_trophy"
+		"trophy": "advancementtrophies:block/gold_trophy",
+		"particle": "minecraft:block/gold_block"
 	}
 }

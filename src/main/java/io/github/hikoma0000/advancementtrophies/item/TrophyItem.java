@@ -82,23 +82,17 @@ public class TrophyItem extends BlockItem {
                                     "Date: Invalid Format").withStyle(ChatFormatting.RED));
                 }
             }
-            Component advancementTitle = TrophyUtils.getAdvancementTitleFromNBT(nbt);
-            if (advancementTitle != null) {
-                pTooltipComponents.add(Component.literal(""));
-                pTooltipComponents.add(
-                        Component.translatableWithFallback("tooltip.advancementtrophies.advancement", "Advancement: %s",
-                                advancementTitle).withStyle(ChatFormatting.GOLD));
-            }
-            if (nbt.contains(NBTKeys.ADVANCEMENT_MOD, Tag.TAG_STRING)) {
-                pTooltipComponents.add(Component
-                        .translatableWithFallback("tooltip.advancementtrophies.mod", "Mod: %s",
-                                nbt.getString("advancement_mod"))
-                        .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
-            }
+
         } else {
             TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
         }
+
+        if (nbt.contains(NBTKeys.ADVANCEMENT_ID, Tag.TAG_STRING) && pLevel != null && pLevel.isClientSide) {
+            TooltipUtils.addOpenAdvancementTooltip(pTooltipComponents);
+        }
     }
+
+
 
     @Override
     public Component getName(ItemStack pStack) {

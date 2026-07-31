@@ -7,6 +7,7 @@ import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.event.AdvancementEventHandler;
 import io.github.hikoma0000.advancementtrophies.event.PlayerEventHandler;
 import io.github.hikoma0000.advancementtrophies.init.*;
+import io.github.hikoma0000.advancementtrophies.network.ModNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -31,8 +32,8 @@ public class AdvancementTrophies {
         ModContainers.CONTAINERS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
-
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "advancementtrophies-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC,
+                "advancementtrophies-client.toml");
 
         modEventBus.addListener(this::init);
         modEventBus.addListener(ClientSetup::init);
@@ -44,5 +45,6 @@ public class AdvancementTrophies {
     }
 
     private void init(final FMLCommonSetupEvent event) {
+        event.enqueueWork(ModNetwork::register);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.hikoma0000.advancementtrophies.client.event;
 
 import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
+import io.github.hikoma0000.advancementtrophies.client.util.AdvancementJumpHelper;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -16,6 +17,14 @@ public class ClientEvents {
         @SubscribeEvent
         public static void onKeyRegister(RegisterKeyMappingsEvent event) {
             event.register(KeyBindings.SHOW_DETAILS_KEY);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onScreenKeyPressedPre(ScreenEvent.KeyPressed.Pre event) {
+        if (AdvancementJumpHelper.tryJumpFromHoveredTrophy(event.getScreen(), event.getKeyCode(),
+                event.getScanCode())) {
+            event.setCanceled(true);
         }
     }
 
