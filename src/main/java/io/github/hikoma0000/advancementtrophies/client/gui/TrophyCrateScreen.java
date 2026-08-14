@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
+@SuppressWarnings("removal")
 public class TrophyCrateScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(AdvancementTrophies.MOD_ID, "textures/gui/container/trophy_crate.png");
@@ -32,7 +33,6 @@ public class TrophyCrateScreen<T extends AbstractContainerMenu> extends Abstract
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }

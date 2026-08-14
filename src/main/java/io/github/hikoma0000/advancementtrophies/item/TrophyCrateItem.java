@@ -5,6 +5,9 @@ import io.github.hikoma0000.advancementtrophies.client.util.TooltipUtils;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
 import io.github.hikoma0000.advancementtrophies.util.TrophyRarity;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -20,15 +23,12 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 public class TrophyCrateItem extends BlockItem {
     public TrophyCrateItem(Block pBlock, Properties pProperties) {
@@ -76,7 +76,7 @@ public class TrophyCrateItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents,
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pContext, List<Component> pTooltipComponents,
             TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
         pTooltipComponents.add(Component.translatable("tooltip.advancementtrophies.trophy_crate.description")
@@ -94,18 +94,21 @@ public class TrophyCrateItem extends BlockItem {
                         continue;
                     TrophyRarity rarity = ModItems.getTrophyRarity(stackInSlot.getItem());
                     if (rarity != null) {
-                        counts.merge(rarity, stackInSlot.getCount(), Integer::sum);
+                        counts.put(rarity, counts.getOrDefault(rarity, 0) + stackInSlot.getCount());
                     }
                 }
+
                 for (TrophyRarity rarity : TrophyRarity.values()) {
                     int count = counts.getOrDefault(rarity, 0);
                     if (count > 0) {
-                        pTooltipComponents.add(
-                                Component.translatableWithFallback(
-                                        "tooltip.advancementtrophies.trophy_crate.amount",
-                                        "  %s: %s",
-                                        Component.translatable("rarity.advancementtrophies." + rarity.getName()),
-                                        count).withStyle(rarity.getStyleModifier()));
+                        pTooltipComponents
+                                .add(Component
+                                        .translatableWithFallback("tooltip.advancementtrophies.trophy_crate.amount",
+                                                "  %s: %s",
+                                                Component.translatable(
+                                                        "rarity.advancementtrophies." + rarity.getName()),
+                                                count)
+                                        .withStyle(rarity.getItemRarity().getStyleModifier()));
                     }
                 }
             }

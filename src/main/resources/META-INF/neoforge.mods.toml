@@ -14,6 +14,8 @@ credits = ''''''
 logoFile="logo.png"
 displayURL="https://github.com/hikoma0000/Advancement-Trophies-Reforged/tree/neoforge/1.21.1"
 
+[[mixins]]
+config="advancementtrophies.mixins.json"
 
 [[dependencies."${mod_id}"]]
 modId="neoforge"

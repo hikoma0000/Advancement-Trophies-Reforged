@@ -3,6 +3,7 @@ package io.github.hikoma0000.advancementtrophies.inventory;
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity;
 import io.github.hikoma0000.advancementtrophies.init.ModBlocks;
 import io.github.hikoma0000.advancementtrophies.init.ModContainers;
+import io.github.hikoma0000.advancementtrophies.init.ModItems;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +35,12 @@ public class TrophyCrateContainer extends AbstractContainerMenu {
 
         for (int i = 0; i < containerRows; ++i) {
             for (int j = 0; j < containerCols; ++j) {
-                this.addSlot(new Slot(this.blockEntity, j + i * containerCols, 8 + j * 18, 18 + i * 18));
+                this.addSlot(new Slot(this.blockEntity, j + i * containerCols, 8 + j * 18, 18 + i * 18) {
+                    @Override
+                    public boolean mayPlace(@NotNull ItemStack stack) {
+                        return ModItems.isTrophy(stack);
+                    }
+                });
             }
         }
 

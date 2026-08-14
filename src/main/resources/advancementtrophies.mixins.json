@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.hikoma0000.advancementtrophies.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "advancementtrophies.refmap.json",
+  "mixins": [],
+  "client": [
+    "client.ClientAdvancementsAccessor",
+    "client.AdvancementTabAccessor",
+    "client.AdvancementWidgetAccessor",
+    "client.ItemInHandRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

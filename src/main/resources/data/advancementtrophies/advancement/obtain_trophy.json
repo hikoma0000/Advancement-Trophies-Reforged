@@ -1,0 +1,29 @@
+{
+	"parent": "advancementtrophies:root",
+	"display": {
+		"icon": {
+			"id": "advancementtrophies:iron_trophy"
+		},
+		"title": {
+			"translate": "advancements.advancementtrophies.obtain_trophy.title"
+		},
+		"description": {
+			"translate": "advancements.advancementtrophies.obtain_trophy.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"obtain_trophy": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "#advancementtrophies:trophies"
+					}
+				]
+			}
+		}
+	}
+}

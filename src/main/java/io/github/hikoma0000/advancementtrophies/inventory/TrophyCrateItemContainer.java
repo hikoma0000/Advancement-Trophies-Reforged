@@ -1,5 +1,6 @@
 package io.github.hikoma0000.advancementtrophies.inventory;
 
+import io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity;
 import io.github.hikoma0000.advancementtrophies.init.ModContainers;
 import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import io.github.hikoma0000.advancementtrophies.init.ModItems;
@@ -8,6 +9,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Unit;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -37,17 +39,13 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
     public TrophyCrateItemContainer(int pContainerId, Inventory pPlayerInventory, ItemStack crateStack, InteractionHand hand) {
         super(ModContainers.TROPHY_CRATE_ITEM_CONTAINER.get(), pContainerId);
         this.crateStack = crateStack;
-        this.crateInventory = new SimpleContainer(io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity.CONTAINER_SIZE);
+        this.crateInventory = new SimpleContainer(TrophyCrateBlockEntity.CONTAINER_SIZE);
 
-        ItemContainerContents contents = crateStack.get(DataComponents.CONTAINER);
-        if (contents != null) {
-            int i = 0;
-            for(ItemStack item : contents.stream().toList()) {
-                if (i < this.crateInventory.getContainerSize()) {
-                    this.crateInventory.setItem(i, item);
-                    i++;
-                }
-            }
+        ItemContainerContents contents = crateStack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+        NonNullList<ItemStack> items = NonNullList.withSize(TrophyCrateBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
+        contents.copyInto(items);
+        for (int i = 0; i < items.size(); i++) {
+            this.crateInventory.setItem(i, items.get(i));
         }
 
         this.hand = hand;
@@ -66,7 +64,7 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
                 });
             }
         }
-        crateStack.set(ModDataComponents.OPEN.get(), true);
+        crateStack.set(ModDataComponents.CRATE_OPEN.get(), Unit.INSTANCE);
 
         int lockedPlayerSlot = pPlayerInventory.selected;
         if(hand == InteractionHand.OFF_HAND) {
@@ -88,7 +86,7 @@ public class TrophyCrateItemContainer extends AbstractContainerMenu {
     @Override
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
-        crateStack.set(ModDataComponents.OPEN.get(), false);
+        crateStack.remove(ModDataComponents.CRATE_OPEN.get());
 
         NonNullList<ItemStack> items = NonNullList.withSize(this.crateInventory.getContainerSize(), ItemStack.EMPTY);
         for(int i = 0; i < this.crateInventory.getContainerSize(); i++) {

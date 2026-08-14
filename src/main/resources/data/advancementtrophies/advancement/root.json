@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "advancementtrophies:gold_trophy"
+    },
+    "title": {
+      "translate": "advancements.advancementtrophies.root.title"
+    },
+    "description": {
+      "translate": "advancements.advancementtrophies.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png"
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}
