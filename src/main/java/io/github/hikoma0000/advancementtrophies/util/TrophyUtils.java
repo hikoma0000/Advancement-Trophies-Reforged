@@ -3,6 +3,7 @@ package io.github.hikoma0000.advancementtrophies.util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
 public class TrophyUtils {
@@ -19,5 +20,11 @@ public class TrophyUtils {
             }
         }
         return null;
+    }
+
+    public static String resolveModDisplayName(String modId) {
+        return ModList.get().getModContainerById(modId)
+                .map(container -> container.getModInfo().getDisplayName())
+                .orElse(modId);
     }
 }

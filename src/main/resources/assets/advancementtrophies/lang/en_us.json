@@ -12,6 +12,7 @@
   "tooltip.advancementtrophies.rarity": "Rarity: %s",
   "tooltip.advancementtrophies.achiever": "Achiever: %s",
   "tooltip.advancementtrophies.date.format": "Date: %s",
+  "tooltip.advancementtrophies.mod": "Mod: %s",
   "tooltip.advancementtrophies.hold_for_details": "§7Hold [§f%s§7] for details",
   "tooltip.advancementtrophies.open_advancement": "§7Press [§f%s§7] to open advancement",
   "tooltip.advancementtrophies.trophy_crate.description": "Stores trophies and collects them automatically",

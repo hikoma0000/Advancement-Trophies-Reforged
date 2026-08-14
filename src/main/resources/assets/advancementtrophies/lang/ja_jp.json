@@ -12,6 +12,7 @@
   "tooltip.advancementtrophies.rarity": "レアリティ: %s",
   "tooltip.advancementtrophies.achiever": "達成者: %s",
   "tooltip.advancementtrophies.date.format": "達成日時: %s",
+  "tooltip.advancementtrophies.mod": "Mod: %s",
   "tooltip.advancementtrophies.hold_for_details": "§7[§f%s§7]キーで詳細表示",
   "tooltip.advancementtrophies.open_advancement": "§7[§f%s§7]キーで進捗を開く",
   "tooltip.advancementtrophies.trophy_crate.description": "トロフィーを保管し、自動で収集します",

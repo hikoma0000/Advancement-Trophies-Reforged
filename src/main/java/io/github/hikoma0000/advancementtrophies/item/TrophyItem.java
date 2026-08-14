@@ -82,6 +82,15 @@ public class TrophyItem extends BlockItem {
                                     "Date: Invalid Format").withStyle(ChatFormatting.RED));
                 }
             }
+            if (nbt.contains(NBTKeys.ADVANCEMENT_MOD, Tag.TAG_STRING)) {
+                String modId = nbt.getString(NBTKeys.ADVANCEMENT_MOD);
+                if (!modId.isEmpty()) {
+                    String displayName = TrophyUtils.resolveModDisplayName(modId);
+                    pTooltipComponents.add(Component
+                            .translatableWithFallback("tooltip.advancementtrophies.mod", "Mod: %s", displayName)
+                            .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+                }
+            }
 
         } else {
             TooltipUtils.addHoldForDetailsTooltip(pTooltipComponents);
