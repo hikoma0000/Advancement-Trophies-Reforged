@@ -26,10 +26,11 @@ run
 test
 logs
 .run
-sources/
 src/generated/resources/.cache
-docs/
 
 # Files from Forge MDK
 forge*changelog.txt
 /temp/
+
+myfiles/*
+.hiver.json

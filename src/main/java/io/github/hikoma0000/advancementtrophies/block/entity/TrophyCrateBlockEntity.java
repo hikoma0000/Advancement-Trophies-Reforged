@@ -38,19 +38,19 @@ public class TrophyCrateBlockEntity extends RandomizableContainerBlockEntity imp
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider pRegistries) {
-        super.saveAdditional(tag, pRegistries);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (!trySaveLootTable(tag)) {
-            ContainerHelper.saveAllItems(tag, this.items, pRegistries);
+            ContainerHelper.saveAllItems(tag, this.items, registries);
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(tag, pRegistries);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         this.items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
         if (!tryLoadLootTable(tag)) {
-            ContainerHelper.loadAllItems(tag, this.items, pRegistries);
+            ContainerHelper.loadAllItems(tag, this.items, registries);
         }
     }
 
@@ -67,6 +67,11 @@ public class TrophyCrateBlockEntity extends RandomizableContainerBlockEntity imp
     @Override
     protected void setItems(NonNullList<ItemStack> items) {
         this.items = items;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return this.hasCustomName() ? this.getCustomName() : this.getDefaultName();
     }
 
     @Override
@@ -136,7 +141,7 @@ public class TrophyCrateBlockEntity extends RandomizableContainerBlockEntity imp
     public static void tick(Level level, BlockPos pos, BlockState state, TrophyCrateBlockEntity blockEntity) {
         if (!blockEntity.initialized) {
             if (state.getValue(TrophyCrateBlock.OPEN)) {
-                level.setBlock(pos, state.setValue(TrophyCrateBlock.OPEN, false), 3);
+                level.setBlock(pos, state.setValue(TrophyCrateBlock.OPEN, Boolean.valueOf(false)), 3);
             }
             blockEntity.initialized = true;
         }

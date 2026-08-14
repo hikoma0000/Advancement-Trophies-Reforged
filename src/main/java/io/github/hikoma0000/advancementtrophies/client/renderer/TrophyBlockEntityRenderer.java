@@ -5,15 +5,16 @@ import com.mojang.math.Axis;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyBlockEntity;
 import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
+import io.github.hikoma0000.advancementtrophies.compat.alexsmobs.AlexsMobsCompat;
+import io.github.hikoma0000.advancementtrophies.compat.citadel.CitadelCompat;
+import io.github.hikoma0000.advancementtrophies.component.TrophyData;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
-import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -39,9 +40,14 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
 
     @Override
     public void render(TrophyBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
-        CompoundTag nbt = pBlockEntity.getTrophyData();
+        TrophyData data = pBlockEntity.getTrophyData();
 
-        if (nbt == null || nbt.isEmpty()) {
+        if (data == null) {
+            return;
+        }
+
+        Vec3 cameraPos = this.minecraft.gameRenderer.getMainCamera().getPosition();
+        if (cameraPos.distanceToSqr(Vec3.atCenterOf(pBlockEntity.getBlockPos())) > 64.0D * 64.0D) {
             return;
         }
 
@@ -50,31 +56,31 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
 
         BlockState blockState = pBlockEntity.getBlockState();
 
-        if (nbt.contains(NBTKeys.ICON)) {
+        if (data.hasIcon()) {
             pPoseStack.pushPose();
             BlockPos blockPos = pBlockEntity.getBlockPos();
             Vec3 blockCenter = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
             float angle = RenderUtils.getCameraPositionYRotationBillboard(blockCenter, pPartialTick);
             pPoseStack.mulPose(Axis.YP.rotationDegrees(-angle + 180.0f));
 
-            renderIcon(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, nbt);
+            renderIcon(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, data);
             pPoseStack.popPose();
         }
 
-        if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && nbt.contains(NBTKeys.ACHIEVER)) {
+        if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && data.hasAchiever()) {
             pPoseStack.pushPose();
             float rotation = -blockState.getValue(TrophyBlock.FACING).toYRot();
             pPoseStack.mulPose(Axis.YP.rotationDegrees(rotation));
             pPoseStack.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
-            RenderUtils.renderLabel(pPoseStack, pBufferSource, pPackedLight, Component.literal(nbt.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
+            RenderUtils.renderLabel(pPoseStack, pBufferSource, pPackedLight, Component.literal(data.achiever()), MAX_LABEL_WIDTH, LABEL_SCALE);
             pPoseStack.popPose();
         }
 
         pPoseStack.popPose();
     }
 
-    private void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, CompoundTag nbt) {
-        ItemStack iconStack = ItemStack.parse(minecraft.level.registryAccess(), nbt.getCompound(NBTKeys.ICON)).orElse(ItemStack.EMPTY);
+    private void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, TrophyData data) {
+        ItemStack iconStack = data.icon();
         if (iconStack.isEmpty()) {
             return;
         }
@@ -85,8 +91,16 @@ public class TrophyBlockEntityRenderer implements BlockEntityRenderer<TrophyBloc
         poseStack.translate(ICON_TRANSLATE[0], ICON_TRANSLATE[1], ICON_TRANSLATE[2]);
         poseStack.scale(ICON_SCALE[0], ICON_SCALE[1], ICON_SCALE[2]);
 
-        itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, minecraft.level, 0);
+        if (!CitadelCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, packedOverlay)
+                && !AlexsMobsCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, packedOverlay)) {
+            itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, minecraft.level, 0);
+        }
 
         poseStack.popPose();
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 64;
     }
 }

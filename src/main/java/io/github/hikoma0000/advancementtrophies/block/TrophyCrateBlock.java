@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.hikoma0000.advancementtrophies.block.entity.TrophyCrateBlockEntity;
 import io.github.hikoma0000.advancementtrophies.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -24,16 +25,22 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class TrophyCrateBlock extends BaseEntityBlock {
-    public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
     public static final MapCodec<TrophyCrateBlock> CODEC = simpleCodec(TrophyCrateBlock::new);
+    public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
+    public static final ResourceLocation CONTENTS = ResourceLocation.withDefaultNamespace("contents");
+
 
     public TrophyCrateBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, Boolean.valueOf(false)));
     }
 
     @Override
@@ -54,51 +61,34 @@ public class TrophyCrateBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return ModBlockEntities.TROPHY_CRATE.get().create(pos, state);
+        return new TrophyCrateBlockEntity(pos, state);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
-            return InteractionResult.SUCCESS;
-        } else {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            if (blockentity instanceof TrophyCrateBlockEntity) {
-                if (pPlayer instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.openMenu((TrophyCrateBlockEntity)blockentity, pPos);
-                    pPlayer.awardStat(Stats.OPEN_BARREL);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            if (entity instanceof TrophyCrateBlockEntity crateEntity) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(crateEntity, pos);
+                    player.awardStat(Stats.OPEN_BARREL);
                 }
-            }
-            return InteractionResult.CONSUME;
-        }
-    }
-
-    @Override
-    public BlockState playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
-        if (!pLevel.isClientSide && pPlayer.isCreative()) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            if (blockentity instanceof TrophyCrateBlockEntity crateEntity) {
-                if (!crateEntity.isEmpty()) {
-                    ItemStack itemstack = new ItemStack(this);
-                    itemstack.applyComponents(crateEntity.collectComponents());
-
-                    ItemEntity itementity = new ItemEntity(pLevel, (double)pPos.getX() + 0.5D, (double)pPos.getY() + 0.5D, (double)pPos.getZ() + 0.5D, itemstack);
-                    itementity.setDefaultPickUpDelay();
-                    pLevel.addFreshEntity(itementity);
-                }
+            } else {
+                throw new IllegalStateException("Our Container provider is missing!");
             }
         }
-        return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
+
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     @Override
-    protected void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockentity = level.getBlockEntity(pos);
             if (blockentity instanceof TrophyCrateBlockEntity) {
-                pLevel.updateNeighbourForOutputSignal(pPos, this);
+                level.updateNeighbourForOutputSignal(pos, this);
             }
-            super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+            super.onRemove(state, level, pos, newState, isMoving);
         }
     }
 
@@ -106,6 +96,46 @@ public class TrophyCrateBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.TROPHY_CRATE.get(), TrophyCrateBlockEntity::tick);
+    }
+
+    @Override
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+        super.triggerEvent(state, level, pos, id, param);
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        return blockentity != null && blockentity.triggerEvent(id, param);
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof TrophyCrateBlockEntity trophyCrateBlockEntity) {
+            if (!level.isClientSide && player.isCreative() && !trophyCrateBlockEntity.isEmpty()) {
+                ItemStack itemstack = new ItemStack(this);
+                itemstack.applyComponents(trophyCrateBlockEntity.collectComponents());
+
+                ItemEntity itementity = new ItemEntity(level, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemstack);
+                itementity.setDefaultPickUpDelay();
+                level.addFreshEntity(itementity);
+            } else {
+                trophyCrateBlockEntity.unpackLootTable(player);
+            }
+        }
+
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        BlockEntity blockentity = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockentity instanceof TrophyCrateBlockEntity trophyCrateBlockEntity) {
+            params = params.withDynamicDrop(CONTENTS, (consumer) -> {
+                for(int i = 0; i < trophyCrateBlockEntity.getContainerSize(); ++i) {
+                    consumer.accept(trophyCrateBlockEntity.getItem(i));
+                }
+            });
+        }
+        return super.getDrops(state, params);
     }
 
     @Override

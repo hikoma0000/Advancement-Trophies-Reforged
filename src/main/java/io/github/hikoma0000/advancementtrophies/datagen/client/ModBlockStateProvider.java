@@ -3,15 +3,13 @@ package io.github.hikoma0000.advancementtrophies.datagen.client;
 import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
 import io.github.hikoma0000.advancementtrophies.block.TrophyCrateBlock;
 import io.github.hikoma0000.advancementtrophies.init.ModBlocks;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModBlockStateProvider extends BlockStateProvider {
 
@@ -37,10 +35,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         });
     }
 
-    private void trophyBlock(Supplier<Block> blockSupplier) {
-        Block block = blockSupplier.get();
-        String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
-        ModelFile model = models().getExistingFile(modLoc("block/" + path));
+    private void trophyBlock(DeferredHolder<Block, Block> blockHolder) {
+        Block block = blockHolder.get();
+        ModelFile model = models().getExistingFile(modLoc("block/" + blockHolder.getId().getPath()));
         horizontalBlock(block, model);
     }
 }

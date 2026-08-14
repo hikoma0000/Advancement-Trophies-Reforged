@@ -4,13 +4,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.hikoma0000.advancementtrophies.block.TrophyBlock;
 import io.github.hikoma0000.advancementtrophies.client.util.RenderUtils;
+import io.github.hikoma0000.advancementtrophies.compat.alexsmobs.AlexsMobsCompat;
+import io.github.hikoma0000.advancementtrophies.compat.citadel.CitadelCompat;
+import io.github.hikoma0000.advancementtrophies.component.TrophyData;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
-import io.github.hikoma0000.advancementtrophies.util.NBTKeys;
+import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -18,19 +23,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
+import org.jetbrains.annotations.Nullable;
 import tschipp.carryon.client.render.CarryRenderHelper;
 import tschipp.carryon.common.carry.CarryOnData;
 import tschipp.carryon.common.carry.CarryOnDataManager;
 
+
 public class CarryOnRenderer {
     private static final Minecraft MINECRAFT = Minecraft.getInstance();
 
-    private static final float[] ICON_TRANSLATE = { 0.0f, 0.75f, 0.0f };
-    private static final float[] ICON_SCALE = { 0.5f, 0.5f, 0.5f };
+    private static final float[] ICON_TRANSLATE = {0.0f, 0.75f, 0.0f};
+    private static final float[] ICON_SCALE = {0.5f, 0.5f, 0.5f};
 
-    private static final float[] LABEL_TRANSLATE = { 0.0f, -0.4f, 0.2f };
-    private static final float[] LABEL_SCALE = { 0.01f, -0.01f, 0.01f };
+    private static final float[] LABEL_TRANSLATE = {0.0f, -0.4f, 0.2f};
+    private static final float[] LABEL_SCALE = {0.01f, -0.01f, 0.01f};
     private static final float MAX_LABEL_WIDTH = 35.0f;
+
 
     public static void renderInWorld(PoseStack eventPoseStack, float partialTick) {
         if (MINECRAFT.level == null || MINECRAFT.player == null || MINECRAFT.cameraEntity == null) {
@@ -40,8 +48,7 @@ public class CarryOnRenderer {
         MultiBufferSource.BufferSource bufferSource = MINECRAFT.renderBuffers().bufferSource();
 
         for (Player player : MINECRAFT.level.players()) {
-            if (MINECRAFT.options.getCameraType().isFirstPerson() && player == MINECRAFT.player
-                    && !isFirstPersonModLoaded()) {
+            if (MINECRAFT.options.getCameraType().isFirstPerson() && player == MINECRAFT.player && !isFirstPersonModLoaded()) {
                 continue;
             }
 
@@ -49,13 +56,15 @@ public class CarryOnRenderer {
             if (!carryData.isCarrying(CarryOnData.CarryType.BLOCK)) {
                 continue;
             }
+
             BlockState carriedBlockState = carryData.getBlock();
             if (!(carriedBlockState.getBlock() instanceof TrophyBlock)) {
                 continue;
             }
 
-            CompoundTag trophyData = carryData.getNbt().getCompound("tile").getCompound("TrophyData");
-            if (trophyData.isEmpty()) {
+            CompoundTag tile = carryData.getNbt().getCompound("tile");
+            TrophyData trophyData = readTrophyData(tile);
+            if (trophyData == null) {
                 continue;
             }
 
@@ -66,7 +75,7 @@ public class CarryOnRenderer {
 
             int packedLight = MINECRAFT.getEntityRenderDispatcher().getPackedLightCoords(player, partialTick);
 
-            boolean isViewFromBack = player != MINECRAFT.player || MINECRAFT.options.getCameraType().isMirrored();
+            boolean isViewFromBack = player != MINECRAFT.player || CarryRenderHelper.getPerspective() != 0;
 
             matrix.pushPose();
 
@@ -74,7 +83,7 @@ public class CarryOnRenderer {
                 matrix.mulPose(Axis.YP.rotationDegrees(180.0F));
             }
 
-            if (trophyData.contains(NBTKeys.ICON)) {
+            if (trophyData.hasIcon()) {
                 matrix.pushPose();
                 if (player == MINECRAFT.player) {
                     if (isViewFromBack) {
@@ -90,23 +99,44 @@ public class CarryOnRenderer {
                 matrix.popPose();
             }
 
-            if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && trophyData.contains(NBTKeys.ACHIEVER)) {
+            if (ClientConfig.SHOW_ACHIEVER_LABEL.get() && trophyData.hasAchiever()) {
                 matrix.pushPose();
                 matrix.translate(LABEL_TRANSLATE[0], LABEL_TRANSLATE[1], LABEL_TRANSLATE[2]);
-                RenderUtils.renderLabel(matrix, bufferSource, packedLight,
-                        Component.literal(trophyData.getString(NBTKeys.ACHIEVER)), MAX_LABEL_WIDTH, LABEL_SCALE);
+                RenderUtils.renderLabel(matrix, bufferSource, packedLight, Component.literal(trophyData.achiever()), MAX_LABEL_WIDTH, LABEL_SCALE);
                 matrix.popPose();
             }
 
+            matrix.popPose();
+
+            matrix.popPose();
             matrix.popPose();
         }
         bufferSource.endBatch();
     }
 
-    private static void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
-            CompoundTag nbt) {
-        ItemStack iconStack = ItemStack.parse(MINECRAFT.level.registryAccess(), nbt.getCompound(NBTKeys.ICON))
-                .orElse(ItemStack.EMPTY);
+    @Nullable
+    private static TrophyData readTrophyData(CompoundTag tile) {
+        var ops = MINECRAFT.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+
+        if (tile.contains("components", CompoundTag.TAG_COMPOUND)) {
+            TrophyData fromComponents = DataComponentMap.CODEC
+                    .parse(ops, tile.getCompound("components"))
+                    .result()
+                    .map(map -> map.get(ModDataComponents.TROPHY_DATA.get()))
+                    .orElse(null);
+            if (fromComponents != null) {
+                return fromComponents;
+            }
+        }
+
+        if (tile.contains("trophy_data")) {
+            return TrophyData.CODEC.parse(ops, tile.get("trophy_data")).result().orElse(null);
+        }
+        return null;
+    }
+
+    private static void renderIcon(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, TrophyData data) {
+        ItemStack iconStack = data.icon();
         if (iconStack.isEmpty()) {
             return;
         }
@@ -117,14 +147,15 @@ public class CarryOnRenderer {
         poseStack.translate(ICON_TRANSLATE[0], ICON_TRANSLATE[1], ICON_TRANSLATE[2]);
         poseStack.scale(ICON_SCALE[0], ICON_SCALE[1], ICON_SCALE[2]);
 
-        itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY,
-                poseStack, bufferSource, MINECRAFT.level, 0);
+        if (!CitadelCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+                && !AlexsMobsCompat.tryRender(iconStack, ItemDisplayContext.FIXED, poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)) {
+            itemRenderer.renderStatic(iconStack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, MINECRAFT.level, 0);
+        }
 
         poseStack.popPose();
     }
 
     private static boolean isFirstPersonModLoaded() {
-        return ModList.get().isLoaded("firstperson") || ModList.get().isLoaded("alien_first_person")
-                || ModList.get().isLoaded("realcamera");
+        return ModList.get().isLoaded("firstperson") || ModList.get().isLoaded("alien_first_person") || ModList.get().isLoaded("realcamera");
     }
 }

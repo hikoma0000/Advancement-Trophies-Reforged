@@ -107,7 +107,12 @@ dependencies {
     implementation "maven.modrinth:sophisticated-backpacks:CYOnGzwN"
     implementation "maven.modrinth:sophisticated-core:qi2pvRvC"
     implementation "curse.maven:curios-309927:6529130"
-    
+
+    implementation "maven.modrinth:citadel-(1.21.1-port):mIylVpkN"
+    implementation "maven.modrinth:alexs-mobs(1.21.1):KSgki4uc"
+    implementation "maven.modrinth:alexs-caves-(unofficial-port):pC1MYhqR"
+    // implementation "maven.modrinth:better-advancements:FjTYILOi"
+
     if (!gradle.startParameter.taskNames.contains("runData")) {
         runtimeOnly "curse.maven:configured-457570:5873783"
         runtimeOnly "curse.maven:nbt-autocomplete-813557:5957930"

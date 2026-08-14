@@ -1,6 +1,7 @@
 {
 	"parent": "advancementtrophies:block/trophy",
 	"textures": {
-		"trophy": "advancementtrophies:block/netherite_trophy"
+		"trophy": "advancementtrophies:block/netherite_trophy",
+		"particle": "minecraft:block/netherite_block"
 	}
 }

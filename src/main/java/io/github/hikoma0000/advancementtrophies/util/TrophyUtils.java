@@ -1,24 +1,26 @@
 package io.github.hikoma0000.advancementtrophies.util;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import io.github.hikoma0000.advancementtrophies.component.TrophyData;
+import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
 public class TrophyUtils {
     @Nullable
-    public static Component getAdvancementTitleFromNBT(CompoundTag nbt, @Nullable HolderLookup.Provider provider) {
-        if (nbt.contains(NBTKeys.ADVANCEMENT_TITLE, Tag.TAG_STRING)) {
-            return Component.translatableWithFallback(nbt.getString(NBTKeys.ADVANCEMENT_TITLE), nbt.getString(NBTKeys.ADVANCEMENT_TITLE));
-        }
-        if (provider != null && nbt.contains(NBTKeys.ADVANCEMENT_TITLE_JSON, Tag.TAG_STRING)) {
-            try {
-                return Component.Serializer.fromJson(nbt.getString(NBTKeys.ADVANCEMENT_TITLE_JSON), provider);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        return null;
+    public static Component getAdvancementTitle(ItemStack stack) {
+        return getAdvancementTitle(stack.get(ModDataComponents.TROPHY_DATA.get()));
+    }
+
+    @Nullable
+    public static Component getAdvancementTitle(@Nullable TrophyData data) {
+        return data != null ? data.resolveTitle() : null;
+    }
+
+    public static String resolveModDisplayName(String modId) {
+        return ModList.get().getModContainerById(modId)
+                .map(c -> c.getModInfo().getDisplayName())
+                .orElse(modId);
     }
 }
