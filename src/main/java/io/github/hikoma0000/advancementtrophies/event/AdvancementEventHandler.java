@@ -10,7 +10,10 @@ import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,8 +21,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -85,9 +90,15 @@ public class AdvancementEventHandler {
                 display.getIcon());
         trophyStack.set(ModDataComponents.TROPHY_DATA.get(), trophyData);
 
+        Inventory inventory = player.getInventory();
+        List<ItemStack> inventoryBefore = new ArrayList<>(inventory.getContainerSize());
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            inventoryBefore.add(inventory.getItem(i).copy());
+        }
+
         ItemStack trophyRemainder = trophyStack.copy();
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack inventoryStack = player.getInventory().getItem(i);
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack inventoryStack = inventory.getItem(i);
             if (inventoryStack.getItem() instanceof TrophyCrateItem) {
                 trophyRemainder = TrophyCrateItem.addItemToCrate(inventoryStack, trophyRemainder);
                 if (trophyRemainder.isEmpty()) {
@@ -97,11 +108,28 @@ public class AdvancementEventHandler {
         }
 
         if (!trophyRemainder.isEmpty()) {
-            if (!player.getInventory().add(trophyRemainder)) {
+            boolean hasSpace = inventory.getFreeSlot() != -1
+                    || inventory.getSlotWithRemainingSpace(trophyRemainder) != -1;
+            if (!hasSpace || !inventory.add(trophyRemainder)) {
                 player.drop(trophyRemainder, false);
                 player.sendSystemMessage(
                         Component.translatableWithFallback("message.advancementtrophies.inventory_full",
                                 "§cYour inventory is full! The trophy has been dropped nearby."));
+            }
+        }
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            syncChangedSlots(serverPlayer, inventoryBefore);
+        }
+    }
+
+    private static void syncChangedSlots(ServerPlayer player, List<ItemStack> inventoryBefore) {
+        Inventory inventory = player.getInventory();
+        for (int i = 0; i < inventoryBefore.size(); i++) {
+            ItemStack current = inventory.getItem(i);
+            if (!ItemStack.matches(inventoryBefore.get(i), current)) {
+                player.connection.send(new ClientboundContainerSetSlotPacket(
+                        ClientboundContainerSetSlotPacket.PLAYER_INVENTORY, 0, i, current.copy()));
             }
         }
     }
