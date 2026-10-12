@@ -6,6 +6,7 @@ import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.event.AdvancementEventHandler;
 import io.github.hikoma0000.advancementtrophies.event.PlayerEventHandler;
 import io.github.hikoma0000.advancementtrophies.event.TrophyBrushHandler;
+import io.github.hikoma0000.advancementtrophies.event.TrophyGrindstoneHandler;
 import io.github.hikoma0000.advancementtrophies.init.*;
 import io.github.hikoma0000.advancementtrophies.network.ModNetwork;
 import net.neoforged.bus.api.IEventBus;
@@ -40,5 +41,6 @@ public class AdvancementTrophies {
         NeoForge.EVENT_BUS.register(AdvancementEventHandler.class);
         NeoForge.EVENT_BUS.register(PlayerEventHandler.class);
         NeoForge.EVENT_BUS.register(TrophyBrushHandler.class);
+        NeoForge.EVENT_BUS.register(TrophyGrindstoneHandler.class);
     }
 }

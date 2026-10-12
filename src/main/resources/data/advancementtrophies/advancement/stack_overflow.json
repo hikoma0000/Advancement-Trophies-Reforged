@@ -1,0 +1,22 @@
+{
+  "parent": "advancementtrophies:obtain_trophy",
+  "display": {
+    "icon": {
+      "id": "minecraft:repeating_command_block"
+    },
+    "title": {
+      "translate": "advancements.advancementtrophies.stack_overflow.title"
+    },
+    "description": {
+      "translate": "advancements.advancementtrophies.stack_overflow.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "inscribed": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

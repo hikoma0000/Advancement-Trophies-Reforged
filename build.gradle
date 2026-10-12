@@ -111,7 +111,7 @@ dependencies {
     implementation "maven.modrinth:citadel-(1.21.1-port):mIylVpkN"
     implementation "maven.modrinth:alexs-mobs(1.21.1):KSgki4uc"
     implementation "maven.modrinth:alexs-caves-(unofficial-port):pC1MYhqR"
-    // implementation "maven.modrinth:better-advancements:FjTYILOi"
+    compileOnly "maven.modrinth:better-advancements:FjTYILOi"
 
     if (!gradle.startParameter.taskNames.contains("runData")) {
         runtimeOnly "curse.maven:configured-457570:5873783"
