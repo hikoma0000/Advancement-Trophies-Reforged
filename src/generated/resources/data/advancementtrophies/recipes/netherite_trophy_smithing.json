@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "type": "forge:nbt",
+    "count": 1,
+    "item": "advancementtrophies:diamond_trophy"
+  },
+  "result": {
+    "item": "advancementtrophies:netherite_trophy"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}
