@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "X": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    "X X",
+    "XXX",
+    " S "
+  ],
+  "result": {
+    "item": "advancementtrophies:gold_trophy"
+  },
+  "show_notification": true
+}

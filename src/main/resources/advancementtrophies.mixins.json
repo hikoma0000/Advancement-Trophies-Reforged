@@ -10,6 +10,13 @@
     "client.AdvancementTabAccessor",
     "client.AbstractContainerScreenAccessor",
     "client.AdvancementWidgetAccessor",
+    "client.AdvancementsScreenAccessor",
+    "client.AdvancementsScreenMixin",
+    "client.AdvancementTabMixin",
+    "client.AdvancementWidgetMixin",
+    "client.betteradvancements.BetterAdvancementsScreenMixin",
+    "client.betteradvancements.BetterAdvancementTabMixin",
+    "client.betteradvancements.BetterAdvancementWidgetMixin",
     "client.ItemInHandRendererMixin"
   ],
   "injectors": {

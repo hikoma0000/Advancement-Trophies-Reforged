@@ -1,7 +1,9 @@
 package io.github.hikoma0000.advancementtrophies.network;
 
 import io.github.hikoma0000.advancementtrophies.AdvancementTrophies;
+import io.github.hikoma0000.advancementtrophies.network.packet.ClientboundOpenInscribeScreenPacket;
 import io.github.hikoma0000.advancementtrophies.network.packet.ClientboundRememberAdvancementPacket;
+import io.github.hikoma0000.advancementtrophies.network.packet.ServerboundInscribeTrophyPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -26,6 +28,16 @@ public final class ModNetwork {
                 .decoder(ClientboundRememberAdvancementPacket::decode)
                 .encoder(ClientboundRememberAdvancementPacket::encode)
                 .consumerMainThread(ClientboundRememberAdvancementPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(ServerboundInscribeTrophyPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ServerboundInscribeTrophyPacket::decode)
+                .encoder(ServerboundInscribeTrophyPacket::encode)
+                .consumerMainThread(ServerboundInscribeTrophyPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(ClientboundOpenInscribeScreenPacket.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClientboundOpenInscribeScreenPacket::decode)
+                .encoder(ClientboundOpenInscribeScreenPacket::encode)
+                .consumerMainThread(ClientboundOpenInscribeScreenPacket::handle)
                 .add();
     }
 

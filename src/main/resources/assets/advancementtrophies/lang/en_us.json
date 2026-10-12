@@ -5,10 +5,13 @@
   "advancements.advancementtrophies.obtain_trophy.description": "We honor your achievement of earning a trophy, and award you a trophy!",
   "advancements.advancementtrophies.polish_trophy.title": "Good Old Days",
   "advancements.advancementtrophies.polish_trophy.description": "You polished a trophy and remembered the glory of the past",
+  "advancements.advancementtrophies.stack_overflow.title": "Stack Overflow",
+  "advancements.advancementtrophies.stack_overflow.description": "Inscribed \"Trophyception\" on a blank trophy.",
   "item.advancementtrophies.trophy": "Trophy",
   "item.advancementtrophies.trophy.named": "Trophy of %s",
+  "item.advancementtrophies.trophy.blank": "Blank %s",
   "creativetabs.advancementtrophies_tab": "Advancement Trophies Reforged",
-  "tooltip.advancementtrophies.empty": "§7Unobtained Trophy",
+  "tooltip.advancementtrophies.empty.hint": "Use to inscribe a completed advancement",
   "tooltip.advancementtrophies.rarity": "Rarity: %s",
   "tooltip.advancementtrophies.achiever": "Achiever: %s",
   "tooltip.advancementtrophies.date.format": "Date: %s",
@@ -33,5 +36,8 @@
   "key.categories.advancementtrophies": "Advancement Trophies Reforged",
   "key.advancementtrophies.show_details": "Show Trophy Details",
   "message.advancementtrophies.inventory_full": "§cInventory full! Dropped trophy nearby",
-  "message.advancementtrophies.advancement_not_completed": "§cYou have not completed this advancement"
+  "message.advancementtrophies.advancement_not_completed": "§cYou have not completed this advancement",
+  "screen.advancementtrophies.inscribe.hint": "Click an advancement to inscribe",
+  "screen.advancementtrophies.inscribe.wrong_rarity": "Cannot be inscribed on a trophy of this rarity",
+  "screen.advancementtrophies.inscribe.not_completed": "You have not completed this advancement yet"
 }
