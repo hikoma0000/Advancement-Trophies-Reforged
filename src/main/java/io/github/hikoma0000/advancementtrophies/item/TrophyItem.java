@@ -6,9 +6,16 @@ import io.github.hikoma0000.advancementtrophies.component.TrophyDate;
 import io.github.hikoma0000.advancementtrophies.config.ClientConfig;
 import io.github.hikoma0000.advancementtrophies.config.client.input.KeyBindings;
 import io.github.hikoma0000.advancementtrophies.init.ModDataComponents;
+import io.github.hikoma0000.advancementtrophies.network.ModNetwork;
 import io.github.hikoma0000.advancementtrophies.util.TrophyUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +26,8 @@ import net.minecraft.world.level.block.Block;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TrophyItem extends BlockItem {
     public TrophyItem(Block pBlock, Properties pProperties) {
@@ -26,14 +35,36 @@ public class TrophyItem extends BlockItem {
     }
 
     @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+        ItemStack stack = pPlayer.getItemInHand(pUsedHand);
+        if (TrophyUtils.hasTrophyData(stack)) {
+            return super.use(pLevel, pPlayer, pUsedHand);
+        }
+        if (pPlayer instanceof ServerPlayer serverPlayer) {
+            Set<ResourceLocation> inscribableIds = serverPlayer.server.getAdvancements().getAllAdvancements().stream()
+                    .filter(holder -> TrophyUtils.getTrophyItem(holder.value().display().orElse(null)) == this)
+                    .filter(holder -> serverPlayer.getAdvancements().getOrStartProgress(holder).isDone())
+                    .map(AdvancementHolder::id)
+                    .collect(Collectors.toSet());
+            ModNetwork.sendOpenInscribeScreen(serverPlayer, pUsedHand, inscribableIds);
+        }
+        return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide);
+    }
+
+    @Override
+    public boolean canGrindstoneRepair(ItemStack stack) {
+        return TrophyUtils.hasTrophyData(stack);
+    }
+
+    @Override
     public void appendHoverText(ItemStack pStack, Item.TooltipContext pContext, List<Component> pTooltipComponents,
             TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
         TrophyData data = pStack.get(ModDataComponents.TROPHY_DATA.get());
-        if (data == null) {
+        if (data == null || !data.hasAdvancementId()) {
             pTooltipComponents
-                    .add(Component.translatableWithFallback("tooltip.advancementtrophies.empty", "Unclaimed Trophy")
-                            .withStyle(ChatFormatting.GRAY));
+                    .add(Component.translatableWithFallback("tooltip.advancementtrophies.empty.hint",
+                            "Use to inscribe a completed advancement").withStyle(ChatFormatting.YELLOW));
             return;
         }
 
@@ -79,6 +110,10 @@ public class TrophyItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack pStack) {
+        if (!TrophyUtils.hasTrophyData(pStack)) {
+            return Component.translatableWithFallback("item.advancementtrophies.trophy.blank", "Blank %s",
+                    super.getName(pStack));
+        }
         Component advancementTitle = TrophyUtils.getAdvancementTitle(pStack);
         if (advancementTitle != null) {
             return Component.translatableWithFallback("item.advancementtrophies.trophy.named", "Trophy of %s",

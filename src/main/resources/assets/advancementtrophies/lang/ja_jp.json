@@ -5,10 +5,13 @@
   "advancements.advancementtrophies.obtain_trophy.description": "あなたがトロフィーを獲得した功績を称え、トロフィーを授与します！",
   "advancements.advancementtrophies.polish_trophy.title": "こんなときもあった",
   "advancements.advancementtrophies.polish_trophy.description": "トロフィーを磨き上げ、かつての栄光を思い出した",
+  "advancements.advancementtrophies.stack_overflow.title": "スタックオーバーフロー",
+  "advancements.advancementtrophies.stack_overflow.description": "空のトロフィーに「再帰的栄光」を書き込んだ。",
   "item.advancementtrophies.trophy": "トロフィー",
   "item.advancementtrophies.trophy.named": "「%s」のトロフィー",
+  "item.advancementtrophies.trophy.blank": "空の%s",
   "creativetabs.advancementtrophies_tab": "Advancement Trophies Reforged",
-  "tooltip.advancementtrophies.empty": "§7未獲得のトロフィー",
+  "tooltip.advancementtrophies.empty.hint": "使用すると達成済みの進捗を書き込めます",
   "tooltip.advancementtrophies.rarity": "レアリティ: %s",
   "tooltip.advancementtrophies.achiever": "達成者: %s",
   "tooltip.advancementtrophies.date.format": "達成日時: %s",
@@ -34,5 +37,8 @@
   "key.categories.advancementtrophies": "Advancement Trophies Reforged",
   "key.advancementtrophies.show_details": "トロフィーの詳細表示",
   "message.advancementtrophies.inventory_full": "§cインベントリが一杯です！トロフィーを近くにドロップしました",
-  "message.advancementtrophies.advancement_not_completed": "§cあなたはこの進捗を達成していません"
+  "message.advancementtrophies.advancement_not_completed": "§cあなたはこの進捗を達成していません",
+  "screen.advancementtrophies.inscribe.hint": "トロフィーに書き込む進捗をクリックしてください",
+  "screen.advancementtrophies.inscribe.wrong_rarity": "このレアリティのトロフィーには書き込めません",
+  "screen.advancementtrophies.inscribe.not_completed": "まだ達成していない進捗です"
 }

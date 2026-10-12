@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModList;
 
 @OnlyIn(Dist.CLIENT)
 public final class BetterAdvancementsCompat {
@@ -18,6 +19,20 @@ public final class BetterAdvancementsCompat {
 
     public static boolean isBetterAdvancementsScreen(Screen screen) {
         return screen != null && screen.getClass().getName().equals("betteradvancements.common.gui.BetterAdvancementsScreen");
+    }
+
+    public static boolean isLoaded() {
+        return ModList.get().isLoaded("betteradvancements");
+    }
+
+    public static Screen createScreen(ClientAdvancements clientAdvancements) {
+        try {
+            return (Screen) Class.forName("betteradvancements.common.gui.BetterAdvancementsScreen")
+                    .getConstructor(ClientAdvancements.class)
+                    .newInstance(clientAdvancements);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to create the Better Advancements screen", e);
+        }
     }
 
     public static void focus(Screen screen, ClientAdvancements clientAdvancements, AdvancementHolder target) {
